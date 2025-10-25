@@ -1,8 +1,26 @@
-/* Estilo para el link activo en la barra lateral.
-  'active-link' es el nombre que pusimos en [routerLinkActive] 
+/* Este es el estilo que usa [routerLinkActive]="active"
+  para resaltar el enlace del menú en el que te encuentras.
 */
-.active-link {
-  background-color: #4f46e5; /* Color índigo de Tailwind */
-  color: white;
-  font-weight: 600;
+.nav-link {
+  display: flex;
+  align-items: center;
+  padding: 0.75rem 1.5rem; /* 12px 24px */
+  font-size: 0.875rem; /* 14px */
+  font-weight: 500;
+  transition: all 0.2s ease-in-out;
+  border-radius: 0.375rem; /* rounded-md */
+  margin: 0.25rem 0.5rem; /* my-1 mx-2 */
 }
+
+.nav-link:hover {
+  background-color: #4A5568; /* gray-700 */
+  color: #FFFFFF; /* white */
+}
+
+/* Este es el estilo para el enlace activo */
+.nav-link.active {
+  background-color: #4299E1; /* blue-500 */
+  color: #FFFFFF; /* white */
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+

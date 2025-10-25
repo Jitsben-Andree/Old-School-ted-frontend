@@ -1,17 +1,24 @@
-import { Component, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router'; // 1. Importar RouterOutlet y Links
-import { AuthService } from '../../../services/auth';
+import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 
 @Component({
   selector: 'app-admin-layout',
   standalone: true,
-  // 2. Añadir los imports
-  imports: [CommonModule, RouterOutlet, RouterLink, RouterLinkActive], 
+  // Importamos RouterOutlet para que las rutas hijas se rendericen aquí
+  // Importamos RouterLink y RouterLinkActive para el menú de navegación
+  imports: [
+    CommonModule, 
+    RouterOutlet, 
+    RouterLink, 
+    RouterLinkActive
+  ],
   templateUrl: './admin-layout.html',
-  styleUrls: ['./admin-layout.css']
+  styleUrls: ['./admin-layout.css'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AdminLayoutComponent {
-  // 3. Inyectar AuthService para el saludo
-  public authService = inject(AuthService);
+  // Este componente es principalmente un "layout",
+  // por lo que la mayor parte de la lógica estará en sus hijos.
 }
+

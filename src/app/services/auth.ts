@@ -1,108 +1,104 @@
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Injectable, computed, inject, signal } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { Observable, tap, catchError, throwError } from 'rxjs';
+import { Observable, throwError } from 'rxjs';
+import { catchError, tap } from 'rxjs/operators';
+
+// Importa los modelos (DTOs)
 import { AuthResponse } from '../models/auth-response';
 import { LoginRequest } from '../models/login-request';
 import { RegisterRequest } from '../models/register-request';
-import { HttpErrorResponse } from '@angular/common/http';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
-  // URL de tu API de Spring Boot
-  private readonly API_URL = 'http://localhost:8080/api/v1/auth';
 
-  // Inyecta el HttpClient
   private http = inject(HttpClient);
-
-  // --- Signals para manejar el estado de autenticación ---
   
-  // 1. Signal privado para el token
-  #jwtToken = signal<string | null>(localStorage.getItem('token'));
+  // URL de tu API de autenticación en Spring Boot
+  private API_URL = 'http://localhost:8080/api/v1/auth';
+
+  // --- Signals para el estado de autenticación ---
   
-  // 2. Signal privado para los datos del usuario
-  #currentUser = signal<AuthResponse | null>(JSON.parse(localStorage.getItem('user') || 'null'));
-
-  // --- Signals públicos (computados) ---
-
-  // 3. Signal público para saber si está logueado
-  public isLoggedIn = computed(() => !!this.#jwtToken());
-
-  // 4. Signal público para obtener el token (usado por el Interceptor)
-  public currentToken = computed(() => this.#jwtToken());
+  // Signal para el token JWT. Inicia con el valor de localStorage.
+  public jwtToken = signal<string | null>(localStorage.getItem('token'));
   
-  // 5. Signal público para obtener los datos del usuario
-  public currentUser = computed(() => this.#currentUser());
+  // Signal para la información del usuario. Inicia con el valor de localStorage.
+  public currentUser = signal<AuthResponse | null>(
+    JSON.parse(localStorage.getItem('user') || 'null')
+  );
 
-  // 6. Signal público para saber si es Admin
+  // --- Signals Computados (derivados) ---
+
+  /**
+   * Signal computado que nos dice si el usuario está logueado.
+   * La app reaccionará automáticamente a sus cambios.
+   */
+  public isLoggedIn = computed(() => !!this.jwtToken());
+
+  /**
+   * Signal computado que nos dice si el usuario es Administrador.
+   */
   public isAdmin = computed(() => 
-    this.#currentUser()?.roles?.includes('Administrador') ?? false
+    this.currentUser()?.roles?.includes('Administrador') ?? false
   );
 
 
-  constructor() { }
-
   /**
-   * Llama al endpoint /login del backend
+   * (Cliente) Registra un nuevo usuario.
+   * Llama a: POST /api/v1/auth/register
    */
-  login(request: LoginRequest): Observable<AuthResponse> {
-    return this.http.post<AuthResponse>(`${this.API_URL}/login`, request).pipe(
-      tap(response => {
-        // Al tener éxito, guardamos los datos
-        this.saveAuthentication(response);
-      }),
-      catchError(this.handleError)
-    );
-  }
-
-  /**
-   * Llama al endpoint /register del backend
-   */
-  register(request: RegisterRequest): Observable<AuthResponse> {
+  public register(request: RegisterRequest): Observable<AuthResponse> {
     return this.http.post<AuthResponse>(`${this.API_URL}/register`, request).pipe(
-      tap(response => {
-        // Al tener éxito, guardamos los datos (auto-login)
-        this.saveAuthentication(response);
-      }),
+      tap(response => this.saveAuthData(response)), // Guarda la data al registrarse
       catchError(this.handleError)
     );
   }
 
   /**
-   * Cierra la sesión del usuario
+   * (Cliente) Inicia sesión.
+   * Llama a: POST /api/v1/auth/login
    */
-  logout() {
+  public login(request: LoginRequest): Observable<AuthResponse> {
+    return this.http.post<AuthResponse>(`${this.API_URL}/login`, request).pipe(
+      tap(response => this.saveAuthData(response)), // Guarda la data al iniciar sesión
+      catchError(this.handleError)
+    );
+  }
+
+  /**
+   * (Cliente) Cierra la sesión.
+   */
+  public logout(): void {
+    // 1. Borra de localStorage
     localStorage.removeItem('token');
     localStorage.removeItem('user');
-    this.#jwtToken.set(null);
-    this.#currentUser.set(null);
-    // (Opcional) Redirigir al home
-    // this.router.navigate(['/']);
+
+    // 2. Limpia los signals
+    this.jwtToken.set(null);
+    this.currentUser.set(null);
+    
+    // (Opcional) Redirigir al login (aunque el navbar ya lo hace)
   }
 
   /**
-   * Guarda el token y los datos del usuario en localStorage y en los Signals
+   * Helper privado para guardar el token y la info del usuario
+   * en localStorage y en los signals.
    */
-  private saveAuthentication(response: AuthResponse) {
+  private saveAuthData(response: AuthResponse): void {
+    // 1. Guarda en localStorage
     localStorage.setItem('token', response.token);
     localStorage.setItem('user', JSON.stringify(response));
-    this.#jwtToken.set(response.token);
-    this.#currentUser.set(response);
+
+    // 2. Actualiza los signals
+    this.jwtToken.set(response.token);
+    this.currentUser.set(response);
   }
 
-  /**
-   * Manejador de errores simple
-   */
-  private handleError(error: HttpErrorResponse) {
-    console.error("AuthService Error:", error.message);
-    let userMessage = 'Ocurrió un error. Por favor, intenta de nuevo.';
-    if (error.status === 401 || error.status === 403) {
-      userMessage = 'Credenciales incorrectas.';
-    } else if (error.error && error.error.email) {
-      // Captura el error de email duplicado del backend
-      userMessage = error.error.email;
-    }
-    return throwError(() => new Error(userMessage));
+  // --- Manejador de Errores ---
+  private handleError(error: HttpErrorResponse): Observable<never> {
+    console.error('Ocurrió un error en AuthService:', error.message);
+    const errorMsg = error.error?.email || error.message || 'Error desconocido en el servicio de autenticación.';
+    return throwError(() => new Error(errorMsg));
   }
 }

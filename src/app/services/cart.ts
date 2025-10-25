@@ -1,79 +1,94 @@
 import { Injectable, inject, signal } from '@angular/core';
-import { HttpClient, HttpErrorResponse } from '@angular/common/http';
-import { Observable, throwError, catchError, tap } from 'rxjs';
-import { Carrito, AddItemRequest } from '../models/carrito';
-import { AuthService } from './auth'; // Necesario para saber si está logueado
+import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
+import { Observable, throwError } from 'rxjs';
+import { catchError, tap } from 'rxjs/operators';
+import { Carrito } from '../models/carrito';
+import { AddItemRequest } from '../models/add-item-request';
+import { AuthService } from './auth';
 
 @Injectable({
   providedIn: 'root'
 })
 export class CartService {
-  private readonly API_URL = 'http://localhost:8080/api/v1/carrito';
-  
   private http = inject(HttpClient);
   private authService = inject(AuthService);
+  private API_URL = 'http://localhost:8080/api/v1/carrito';
 
-  // --- Signal para el estado del Carrito ---
-  // Mantenemos una copia local del carrito para actualizar la UI al instante.
+  // Carrito local (Signal) para actualizaciones en tiempo real
   public cart = signal<Carrito | null>(null);
 
-  constructor() {
-    // Si el usuario ya está logueado al cargar la app,
-    // podríamos cargar su carrito inicial.
-    // (Esto lo haremos más adelante en app.component.ts)
+  private createAuthHeaders(): HttpHeaders {
+    // Obtenemos el token desde el signal del AuthService
+    const token = this.authService.jwtToken(); 
+    
+    if (!token) {
+      console.error("No se encontró token para la petición del carrito");
+      // Devolver cabeceras vacías o manejar el error
+      return new HttpHeaders();
+    }
+
+    return new HttpHeaders({
+      'Authorization': `Bearer ${token}`
+    });
   }
 
   /**
-   * Obtiene el carrito del usuario desde el backend.
-   * Llama a: GET /carrito/mi-carrito
-   * (Protegido por Interceptor)
+   * Obtiene el carrito del usuario desde la API
    */
   getMiCarrito(): Observable<Carrito> {
-    return this.http.get<Carrito>(`${this.API_URL}/mi-carrito`).pipe(
+    return this.http.get<Carrito>(`${this.API_URL}/mi-carrito`, { 
+      headers: this.createAuthHeaders() 
+    }).pipe(
       tap(carrito => this.cart.set(carrito)), // Actualiza el signal
-      catchError(this.handleError)
+      catchError(err => this.handleError(err))
     );
   }
 
   /**
-   * Añade un item al carrito.
-   * Llama a: POST /carrito/agregar
-   * (Protegido por Interceptor)
+   * Añade un item al carrito
    */
   addItem(productoId: number, cantidad: number): Observable<Carrito> {
     const request: AddItemRequest = { productoId, cantidad };
-    return this.http.post<Carrito>(`${this.API_URL}/agregar`, request).pipe(
+    return this.http.post<Carrito>(`${this.API_URL}/agregar`, request, { 
+      headers: this.createAuthHeaders() 
+    }).pipe(
       tap(carrito => this.cart.set(carrito)), // Actualiza el signal
-      catchError(this.handleError)
+      catchError(err => this.handleError(err))
     );
   }
-
+  
   /**
-   * Elimina un item del carrito.
-   * Llama a: DELETE /carrito/eliminar/{detalleCarritoId}
-   * (Protegido por Interceptor)
+   * Elimina un item del carrito
    */
   removeItem(detalleCarritoId: number): Observable<Carrito> {
-    return this.http.delete<Carrito>(`${this.API_URL}/eliminar/${detalleCarritoId}`).pipe(
+    return this.http.delete<Carrito>(`${this.API_URL}/eliminar/${detalleCarritoId}`, { 
+      headers: this.createAuthHeaders() 
+    }).pipe(
       tap(carrito => this.cart.set(carrito)), // Actualiza el signal
-      catchError(this.handleError)
+      catchError(err => this.handleError(err))
     );
   }
 
   /**
-   * Limpia el carrito local (al hacer logout)
+   * Limpia el carrito local (el signal) después de que un pedido se completa.
+   * Esto soluciona el error TS2339 en checkout.ts
    */
-  clearCartOnLogout() {
+  public clearCartOnLogout(): void {
     this.cart.set(null);
   }
 
+  /**
+   * Manejador de errores centralizado para este servicio
+   */
   private handleError(error: HttpErrorResponse) {
-    console.error("CartService Error:", error.message, error.status);
+    console.error("CartService Error:", error.message, error.status, error.error);
     if (error.status === 401 || error.status === 403) {
-      // Si el token expira o no es válido, cerramos sesión
-      this.authService.logout();
-      return throwError(() => new Error('Sesión expirada. Por favor, inicie sesión.'));
+      // Si no estamos autorizados, podríamos desloguear al usuario
+      // this.authService.logout(); 
+      return throwError(() => new Error('No autorizado. Por favor, inicie sesión de nuevo.'));
     }
-    return throwError(() => new Error('Error al procesar el carrito.'));
+    // Devuelve un error observable para que el componente lo maneje
+    return throwError(() => new Error('Error al procesar el carrito. Intente más tarde.'));
   }
 }
+

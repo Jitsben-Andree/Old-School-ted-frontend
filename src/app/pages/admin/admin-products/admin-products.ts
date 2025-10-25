@@ -1,83 +1,76 @@
-import { Component, inject, OnInit, signal } from '@angular/core';
-import { CommonModule, CurrencyPipe } from '@angular/common';
-import { Router, RouterLink } from '@angular/router';
+import { Component, OnInit, inject, signal } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { RouterLink } from '@angular/router';
 import { ProductService } from '../../../services/product';
 import { Producto } from '../../../models/producto';
+import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
   selector: 'app-admin-products',
   standalone: true,
-  imports: [CommonModule, RouterLink, CurrencyPipe], // Añadir CurrencyPipe
+  imports: [CommonModule, RouterLink], // RouterLink para los botones de "Crear" y "Editar"
   templateUrl: './admin-products.html',
   styleUrls: ['./admin-products.css']
 })
 export class AdminProductsComponent implements OnInit {
-
+  
+  // Inyectamos los servicios
   private productService = inject(ProductService);
-  private router = inject(Router);
 
-  public productos = signal<Producto[]>([]);
-  public isLoading = signal<boolean>(true);
+  // Signals para manejar el estado
+  public products = signal<Producto[]>([]);
+  public loading = signal<boolean>(true);
   public error = signal<string | null>(null);
 
   ngOnInit(): void {
     this.loadProducts();
   }
 
-  loadProducts() {
-    this.isLoading.set(true);
+  /**
+   * Carga la lista de todos los productos (activos e inactivos)
+   */
+  loadProducts(): void {
+    this.loading.set(true);
     this.error.set(null);
 
-    // 1. Usamos el método de admin para cargar productos
-    // (Asegúrate de que tu API devuelva activos e inactivos si es necesario)
+    // Usamos el nuevo método de admin para obtener TODOS los productos
     this.productService.getAllProductosAdmin().subscribe({
       next: (data) => {
-        this.productos.set(data);
-        this.isLoading.set(false);
+        this.products.set(data);
+        this.loading.set(false);
       },
-      error: (err) => {
-        this.error.set(err.message);
-        this.isLoading.set(false);
+      error: (err: HttpErrorResponse) => {
+        console.error(err);
+        this.error.set('Error al cargar los productos.');
+        this.loading.set(false);
       }
     });
   }
 
-  // 2. Método para editar
-  editProduct(id: number) {
-    // (Lo implementaremos después, nos llevará a /admin/products/edit/id)
-    console.log('Ir a editar producto:', id);
-    // this.router.navigate(['/admin/products/edit', id]);
-  }
-
-  // 3. Método para desactivar (borrado lógico)
-  deleteProduct(producto: Producto) {
-    // Usamos window.confirm para una confirmación simple
-    // (En una app real, usarías un modal)
-    if (confirm(`¿Estás seguro de que quieres desactivar "${producto.nombre}"?`)) {
-      this.productService.deleteProducto(producto.id).subscribe({
+  /**
+   * Maneja el borrado lógico (desactivación) de un producto
+   */
+  onDeleteProduct(id: number): void {
+    if (confirm('¿Estás seguro de que quieres desactivar este producto? (Borrado lógico)')) {
+      
+      this.productService.deleteProducto(id).subscribe({
         next: () => {
-          // Opción 1: Recargar todo
-          // this.loadProducts();
-
-          // Opción 2: Actualizar el signal (más rápido)
-          this.productos.update(currentProducts => 
+          // Opción 1: Recargar toda la lista
+          // this.loadProducts(); 
+          
+          // Opción 2: Actualizar el signal local (más rápido)
+          this.products.update(currentProducts => 
             currentProducts.map(p => 
-              p.id === producto.id ? { ...p, activo: false } : p
+              p.id === id ? { ...p, activo: false } : p
             )
           );
-          alert('Producto desactivado con éxito.');
         },
-        error: (err) => {
-          this.error.set(err.message);
+        error: (err: HttpErrorResponse) => {
+          console.error(err);
           alert('Error al desactivar el producto.');
         }
       });
     }
   }
-
-  // 4. (Opcional) Método para reactivar un producto
-  // (Necesitarías un endpoint PUT /admin/productos/{id}/activar en Spring)
-  activateProduct(id: number) {
-    // ... lógica para llamar al servicio de reactivación ...
-  }
 }
+

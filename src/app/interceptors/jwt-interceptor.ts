@@ -3,31 +3,33 @@ import { inject } from '@angular/core';
 import { AuthService } from '../services/auth';
 
 /**
- * Interceptor funcional (moderno) para adjuntar el token JWT
+ * Interceptor funcional (moderno) para adjuntar el token JWT.
  */
 export const jwtInterceptor: HttpInterceptorFn = (req, next) => {
   
-  // Inyecta el servicio de autenticación
+  // Inyectamos el AuthService
   const authService = inject(AuthService);
   
-  // Obtiene el token actual usando el signal computado
-  const token = authService.currentToken(); 
+  // Obtenemos el token desde el signal del servicio de autenticación
+  // Esta es la línea CORREGIDA (usa jwtToken() en lugar de currentToken())
+  const token = authService.jwtToken(); 
 
-  // Rutas que NO necesitan token
-  const isAuthRoute = req.url.includes('/api/v1/auth');
+  // Rutas que no necesitan token (login y registro)
+  if (req.url.includes('/auth/login') || req.url.includes('/auth/register')) {
+    return next(req);
+  }
 
-  // Si tenemos token y NO es una ruta de autenticación
-  if (token && !isAuthRoute) {
-    // Clona la petición y añade la cabecera 'Authorization'
+  // Si tenemos token, clonamos la petición y añadimos la cabecera Authorization
+  if (token) {
     const clonedReq = req.clone({
       setHeaders: {
         Authorization: `Bearer ${token}`
       }
     });
-    // Continúa con la petición clonada
     return next(clonedReq);
   }
 
-  // Si no hay token o es una ruta de auth, deja pasar la petición original
+  // Si no hay token, dejamos pasar la petición original (ej. para ver productos)
   return next(req);
 };
+
