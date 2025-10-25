@@ -1,0 +1,109 @@
+<div class="p-6">
+  <div class="flex justify-between items-center mb-6">
+    <h1 class="text-3xl font-bold text-gray-900">Gestión de Inventario</h1>
+  </div>
+
+  <!-- Estado de Carga -->
+  @if (isLoading()) {
+    <div class="text-center p-12">
+      <p class="text-lg text-gray-700">Cargando inventario...</p>
+      <!-- (Opcional: puedes poner un spinner SVG aquí) -->
+    </div>
+  }
+
+  <!-- Estado de Error -->
+  @if (error() && !isLoading()) {
+    <div class="my-4 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg">
+      <strong>Error:</strong> {{ error() }}
+    </div>
+  }
+
+  <!-- Tabla de Inventario -->
+  @if (!isLoading() && !error() && inventarioLista().length > 0) {
+    <div class="bg-white shadow-lg rounded-lg overflow-hidden">
+      <table class="min-w-full divide-y divide-gray-200">
+        <thead class="bg-gray-50">
+          <tr>
+            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              Producto (ID)
+            </th>
+            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              Stock Actual
+            </th>
+            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              Nuevo Stock
+            </th>
+            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              Última Act.
+            </th>
+            <th scope="col" class="relative px-6 py-3">
+              <span class="sr-only">Acciones</span>
+            </th>
+          </tr>
+        </thead>
+        <tbody class="bg-white divide-y divide-gray-200">
+          
+          @for (item of inventarioLista(); track item.inventarioId) {
+            <tr class="hover:bg-gray-50" [class.opacity-50]="isUpdatingMap[item.productoId]">
+              
+              <!-- Producto -->
+              <td class="px-6 py-4 whitespace-nowrap">
+                <div class="text-sm font-medium text-gray-900">{{ item.productoNombre }}</div>
+                <div class="text-sm text-gray-500">ID: {{ item.productoId }}</div>
+              </td>
+              
+              <!-- Stock Actual -->
+              <td class="px-6 py-4 whitespace-nowrap">
+                <span class="text-2xl font-bold text-gray-900">{{ item.stock }}</span>
+              </td>
+              
+              <!-- Nuevo Stock (Input) -->
+              <td class="px-6 py-4 whitespace-nowrap">
+                <input 
+                  type="number"
+                  min="0"
+                  [(ngModel)]="nuevoStockMap[item.productoId]"
+                  [disabled]="isUpdatingMap[item.productoId]"
+                  class="w-24 px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                >
+              </td>
+
+              <!-- Fecha -->
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                <!-- Usamos el pipe 'date' para formatear la fecha -->
+                {{ item.ultimaActualizacion | date:'dd/MM/yyyy h:mm a' }}
+              </td>
+              
+              <!-- Botón de Acción -->
+              <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                <button 
+                  (click)="actualizarStockProducto(item.productoId)"
+                  [disabled]="isUpdatingMap[item.productoId]"
+                  class="w-32 flex justify-center items-center px-4 py-2 bg-green-600 text-white rounded-lg font-semibold hover:bg-green-700 transition duration-300 shadow-md disabled:opacity-50 disabled:cursor-wait">
+                  
+                  @if (isUpdatingMap[item.productoId]) {
+                    <!-- Spinner SVG -->
+                    <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                      <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                      <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    Guardando...
+                  } @else {
+                    Actualizar
+                  }
+                </button>
+              </td>
+            </tr>
+          } @empty {
+            <tr>
+              <td colspan="5" class="px-6 py-12 text-center text-gray-500">
+                No se encontraron productos en el inventario.
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+</div>
+

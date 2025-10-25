@@ -1,7 +1,19 @@
-// Basado en tu PedidoResponse.dto
-// (Necesitamos DetallePedidoResponse, que crearé aquí también)
+// Coincide con tu DTO PedidoResponse
+export interface PedidoResponse {
+  pedidoId: number;
+  fecha: string; // (o LocalDateTime, pero string es más fácil)
+  estado: string;
+  total: number;
+  detalles: DetallePedido[];
+  direccionEnvio: string;
+  estadoEnvio: string;
+  estadoPago: string;
+  metodoPago: string;
+  usuarioId?: number; // (Para la vista de admin)
+}
 
-export interface DetallePedidoResponse {
+// Coincide con tu DTO DetallePedidoResponse
+export interface DetallePedido {
   detallePedidoId: number;
   productoId: number;
   productoNombre: string;
@@ -9,16 +21,4 @@ export interface DetallePedidoResponse {
   precioUnitario: number;
   subtotal: number;
   montoDescuento: number;
-}
-
-export interface Pedido {
-  pedidoId: number;
-  fecha: string; // (Se recibirá como string ISO)
-  estado: string; // Pendiente, Pagado, Enviado, etc.
-  total: number;
-  detalles: DetallePedidoResponse[];
-  direccionEnvio: string;
-  estadoEnvio: string;
-  estadoPago: string;
-  metodoPago: string;
 }

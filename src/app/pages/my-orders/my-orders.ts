@@ -2,7 +2,7 @@ import { Component, inject, OnInit, signal } from '@angular/core';
 import { CommonModule, CurrencyPipe, DatePipe } from '@angular/common'; // Importar Pipes
 import { RouterLink } from '@angular/router';
 import { PedidoService } from '../../services/pedido';
-import { Pedido } from '../../models/pedido';
+import { PedidoResponse } from '../../models/pedido';
 
 @Component({
   selector: 'app-my-orders',
@@ -18,7 +18,7 @@ export class MyOrdersComponent implements OnInit {
   private pedidoService = inject(PedidoService);
 
   // 3. Signals para el estado
-  public pedidos = signal<Pedido[]>([]);
+  public pedidos = signal<PedidoResponse[]>([]);
   public isLoading = signal<boolean>(true);
   public error = signal<string | null>(null);
 

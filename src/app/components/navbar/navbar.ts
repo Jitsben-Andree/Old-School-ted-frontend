@@ -1,42 +1,43 @@
-import { Component, effect, inject } from '@angular/core';
-import { CommonModule } from '@angular/common'; // Para *ngIf
-import { Router, RouterLink,RouterLinkActive } from '@angular/router'; // Para [routerLink]
+import { Component, inject } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { Router, RouterLink, RouterLinkActive } from '@angular/router'; // Importa Router y RouterLink
 import { AuthService } from '../../services/auth';
 import { CartService } from '../../services/cart';
-import { take } from 'rxjs';
 
 @Component({
   selector: 'app-navbar',
   standalone: true,
-  // 1. Importamos CommonModule y RouterLink
+  // Asegúrate de importar RouterLink aquí para que [routerLink] funcione en el HTML
   imports: [CommonModule, RouterLink,RouterLinkActive], 
-  // 2. Apuntamos a los archivos separados
   templateUrl: './navbar.html',
   styleUrls: ['./navbar.css']
 })
 export class NavbarComponent {
 
-  // 3. Inyectamos los servicios que necesitamos
-  public authService = inject(AuthService); // Público para usarlo en el HTML
-  public cartService = inject(CartService); // Público para el contador del carrito
+  // Inyecta los servicios
+  public authService = inject(AuthService);
+  public cartService = inject(CartService);
   private router = inject(Router);
 
-  constructor() {
-    // ✅ Usamos Signals con effect()
-    effect(() => {
-      const isLoggedIn = this.authService.isLoggedIn(); // se lee como función
+  // Señal para controlar el menú móvil
+  public isMobileMenuOpen = false;
 
-      if (isLoggedIn) {
-        this.cartService.getMiCarrito().pipe(take(1)).subscribe();
-      } else {
-        this.cartService.clearCartOnLogout();
-      }
-    });
+  constructor() {
+    // Cuando el usuario inicie sesión, carga su carrito
+    // (Esto es opcional, pero bueno para tener el número del carrito actualizado)
+    if (this.authService.isLoggedIn()) {
+      this.cartService.getMiCarrito().subscribe();
+    }
   }
 
-  // 4. Lógica de Logout
-  onLogout() {
+  toggleMobileMenu() {
+    this.isMobileMenuOpen = !this.isMobileMenuOpen;
+  }
+
+  logout() {
     this.authService.logout();
-    this.router.navigate(['/login']); // Redirigimos al login
+    this.cartService.cart.set(null); // Limpia el carrito al salir
+    this.isMobileMenuOpen = false; // Cierra el menú móvil
+    this.router.navigate(['/login']); // Redirige al login
   }
 }

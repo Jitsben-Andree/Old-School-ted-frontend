@@ -57,7 +57,7 @@ export class CheckoutComponent implements OnInit {
       metodoPagoInfo: form.value.metodoPagoInfo
     };
 
-    this.pedidoService.crearPedido(request).subscribe({
+    this.pedidoService.crearPedidoDesdeCarrito(request).subscribe({
       next: (pedidoCreado) => {
         this.isLoading = false;
         

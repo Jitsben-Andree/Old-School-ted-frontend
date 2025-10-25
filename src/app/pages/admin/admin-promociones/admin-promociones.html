@@ -1,0 +1,150 @@
+<div class="container mx-auto p-4">
+  <h1 class="text-3xl font-bold text-gray-900 mb-6">Gestión de Promociones</h1>
+
+  <!-- Mensaje de Error Global -->
+  @if (error()) {
+    <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4" role="alert">
+      <strong class="font-bold">Error: </strong>
+      <span class="block sm:inline">{{ error() }}</span>
+    </div>
+  }
+
+  <!-- Formulario de Creación y Edición -->
+  <div class="bg-white p-6 rounded-lg shadow-md mb-8">
+    <h2 class="text-2xl font-semibold mb-4">
+      {{ modoEdicion() ? 'Editar Promoción' : 'Crear Nueva Promoción' }}
+    </h2>
+    
+    <form [formGroup]="promocionForm" (ngSubmit)="manejarSubmit()" class="space-y-4">
+      
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <!-- Código -->
+        <div>
+          <label for="codigo" class="block text-sm font-medium text-gray-700">Código</label>
+          <input type="text" id="codigo" formControlName="codigo"
+                 class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                 [ngClass]="{ 'border-red-500': promocionForm.get('codigo')?.invalid && promocionForm.get('codigo')?.touched }">
+          @if (promocionForm.get('codigo')?.invalid && promocionForm.get('codigo')?.touched) {
+            <div class="text-red-600 text-sm mt-1">El código es obligatorio.</div>
+          }
+        </div>
+
+        <!-- Descuento (%) -->
+        <div>
+          <label for="descuento" class="block text-sm font-medium text-gray-700">Porcentaje Descuento (ej: 10 para 10%)</label>
+          <input type="number" id="descuento" formControlName="descuento"
+                 class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                 [ngClass]="{ 'border-red-500': promocionForm.get('descuento')?.invalid && promocionForm.get('descuento')?.touched }">
+          @if (promocionForm.get('descuento')?.invalid && promocionForm.get('descuento')?.touched) {
+            <div class="text-red-600 text-sm mt-1">El descuento debe ser un número positivo.</div>
+          }
+        </div>
+      </div>
+
+      <!-- Descripción -->
+      <div>
+        <label for="descripcion" class="block text-sm font-medium text-gray-700">Descripción (Opcional)</label>
+        <textarea id="descripcion" formControlName="descripcion" rows="2"
+                  class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+        </textarea>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <!-- Fecha Inicio -->
+        <div>
+          <label for="fechaInicio" class="block text-sm font-medium text-gray-700">Fecha de Inicio</label>
+          <input type="datetime-local" id="fechaInicio" formControlName="fechaInicio"
+                 class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                 [ngClass]="{ 'border-red-500': promocionForm.get('fechaInicio')?.invalid && promocionForm.get('fechaInicio')?.touched }">
+          @if (promocionForm.get('fechaInicio')?.invalid && promocionForm.get('fechaInicio')?.touched) {
+            <div class="text-red-600 text-sm mt-1">La fecha de inicio es obligatoria.</div>
+          }
+        </div>
+
+        <!-- Fecha Fin -->
+        <div>
+          <label for="fechaFin" class="block text-sm font-medium text-gray-700">Fecha de Fin</label>
+          <input type="datetime-local" id="fechaFin" formControlName="fechaFin"
+                 class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                 [ngClass]="{ 'border-red-500': promocionForm.get('fechaFin')?.invalid && promocionForm.get('fechaFin')?.touched }">
+          @if (promocionForm.get('fechaFin')?.invalid && promocionForm.get('fechaFin')?.touched) {
+            <div class="text-red-600 text-sm mt-1">La fecha de fin es obligatoria.</div>
+          }
+        </div>
+      </div>
+
+      <!-- Checkbox Activa -->
+      <div class="flex items-center">
+        <input id="activa" formControlName="activa" type="checkbox"
+               class="h-4 w-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500">
+        <label for="activa" class="ml-2 block text-sm text-gray-900">Activa</label>
+      </div>
+
+      <!-- Botones del Formulario -->
+      <div class="flex space-x-4">
+        <button type="submit" [disabled]="promocionForm.invalid"
+                class="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed">
+          {{ modoEdicion() ? 'Actualizar Promoción' : 'Guardar Promoción' }}
+        </button>
+        
+        @if (modoEdicion()) {
+          <button type="button" (click)="resetearFormulario()"
+                  class="inline-flex justify-center py-2 px-4 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+            Cancelar Edición
+          </button>
+        }
+      </div>
+    </form>
+  </div>
+
+  <!-- Tabla de Promociones Existentes -->
+  <div class="bg-white p-6 rounded-lg shadow-md">
+    <h2 class="text-2xl font-semibold mb-4">Promociones Existentes</h2>
+    
+    <div class="overflow-x-auto">
+      <table class="min-w-full divide-y divide-gray-200">
+        <thead class="bg-gray-50">
+          <tr>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Código</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Descuento</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Inicio</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Fin</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Estado</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Acciones</th>
+          </tr>
+        </thead>
+        <tbody class="bg-white divide-y divide-gray-200">
+          
+          @for (promo of promociones(); track promo.idPromocion) {
+            <tr>
+              <td class="px-6 py-4 whitespace-nowrap text-sm font-bold text-gray-900">{{ promo.codigo }}</td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{{ promo.descuento }}%</td>
+              <!-- Usamos el pipe 'date' para formatear las fechas -->
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ promo.fechaInicio | date:'dd/MM/yy HH:mm' }}</td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ promo.fechaFin | date:'dd/MM/yy HH:mm' }}</td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm">
+                @if (promo.activa) {
+                  <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">Activa</span>
+                } @else {
+                  <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">Inactiva</span>
+                }
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2">
+                <button (click)="cargarPromoEnForm(promo)" class="text-indigo-600 hover:text-indigo-900">Editar</button>
+                @if (promo.activa) {
+                  <button (click)="desactivarPromo(promo.idPromocion)" class="text-red-600 hover:text-red-900">Desactivar</button>
+                }
+              </td>
+            </tr>
+          } @empty {
+            <tr>
+              <td colspan="6" class="px-6 py-4 text-center text-sm text-gray-500">No se encontraron promociones.</td>
+            </tr>
+          }
+
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</div>
