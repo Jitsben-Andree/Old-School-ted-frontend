@@ -1,0 +1,109 @@
+<div class="p-6 max-w-4xl mx-auto">
+  
+  <!-- Encabezado (cambia según el modo) -->
+  <h1 class="text-3xl font-bold text-gray-900 mb-6">
+    <span *ngIf="isEditMode()">Editar Producto (ID: {{ currentProductId() }})</span>
+    <span *ngIf="!isEditMode()">Crear Nuevo Producto</span>
+  </h1>
+
+  <!-- Estado de Carga -->
+  <div *ngIf="isLoading()" class="text-center p-12">
+    <p class="text-lg text-gray-700">Cargando datos...</p>
+  </div>
+
+  <!-- Estado de Error (general) -->
+  <div *ngIf="error() && !isLoading()" class="my-4 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg">
+    <strong>Error:</strong> {{ error() }}
+  </div>
+
+  <!-- Formulario -->
+  <form [formGroup]="productForm" (ngSubmit)="onSubmit()" *ngIf="!isLoading()" class="space-y-6 bg-white p-8 shadow-lg rounded-lg">
+
+    <!-- Fila 1: Nombre -->
+    <div>
+      <label for="nombre" class="block text-sm font-medium text-gray-700">Nombre del Producto</label>
+      <input type="text" id="nombre" formControlName="nombre"
+             class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+      <div *ngIf="productForm.get('nombre')?.invalid && (productForm.get('nombre')?.dirty || productForm.get('nombre')?.touched)"
+           class="text-red-600 text-sm mt-1">
+        El nombre es obligatorio (mín. 3 caracteres).
+      </div>
+    </div>
+
+    <!-- Fila 2: Descripción -->
+    <div>
+      <label for="descripcion" class="block text-sm font-medium text-gray-700">Descripción</label>
+      <textarea id="descripcion" formControlName="descripcion" rows="4"
+                class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"></textarea>
+      <div *ngIf="productForm.get('descripcion')?.invalid && (productForm.get('descripcion')?.dirty || productForm.get('descripcion')?.touched)"
+           class="text-red-600 text-sm mt-1">
+        La descripción es obligatoria.
+      </div>
+    </div>
+
+    <!-- Fila 3: Precio y Talla -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div>
+        <label for="precio" class="block text-sm font-medium text-gray-700">Precio (S/)</label>
+        <input type="number" id="precio" formControlName="precio" step="0.01"
+               class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+        <div *ngIf="productForm.get('precio')?.invalid && (productForm.get('precio')?.dirty || productForm.get('precio')?.touched)"
+             class="text-red-600 text-sm mt-1">
+          El precio debe ser mayor a 0.
+        </div>
+      </div>
+
+      <div>
+        <label for="talla" class="block text-sm font-medium text-gray-700">Talla</label>
+        <select id="talla" formControlName="talla"
+                class="mt-1 block w-full px-3 py-2 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+          <option value="S">S</option>
+          <option value="M">M</option>
+          <option value="L">L</option>
+          <option value="XL">XL</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Fila 4: Categoría y Estado -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div>
+        <label for="categoriaId" class="block text-sm font-medium text-gray-700">Categoría</label>
+        <select id="categoriaId" formControlName="categoriaId"
+                class="mt-1 block w-full px-3 py-2 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+          <option [ngValue]="null" disabled>Seleccione una categoría</option>
+          <option *ngFor="let cat of categories()" [value]="cat.idCategoria">
+            {{ cat.nombre }}
+          </option>
+        </select>
+        <div *ngIf="productForm.get('categoriaId')?.invalid && (productForm.get('categoriaId')?.dirty || productForm.get('categoriaId')?.touched)"
+             class="text-red-600 text-sm mt-1">
+          Debe seleccionar una categoría.
+        </div>
+      </div>
+
+      <div>
+        <label for="activo" class="block text-sm font-medium text-gray-700">Estado</label>
+        <select id="activo" formControlName="activo"
+                class="mt-1 block w-full px-3 py-2 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+          <option [ngValue]="true">Activo (Visible en tienda)</option>
+          <option [ngValue]="false">Inactivo (Oculto)</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Fila 5: Botones -->
+    <div class="flex justify-end space-x-4 pt-4 border-t border-gray-200">
+      <a [routerLink]="['/admin/products']"
+         class="px-5 py-2 bg-gray-200 text-gray-800 rounded-lg font-semibold hover:bg-gray-300 transition duration-300">
+        Cancelar
+      </a>
+      <button type="submit" [disabled]="productForm.invalid || isLoading()"
+              class="px-5 py-2 bg-indigo-600 text-white rounded-lg font-semibold hover:bg-indigo-700 transition duration-300 shadow-md disabled:opacity-50 disabled:cursor-not-allowed">
+        <span *ngIf="!isEditMode()">Crear Producto</span>
+        <span *ngIf="isEditMode()">Guardar Cambios</span>
+      </button>
+    </div>
+
+  </form>
+</div>

@@ -1,1 +1,103 @@
-<p>admin-products works!</p>
+<div class="p-6">
+  <div class="flex justify-between items-center mb-6">
+    <h1 class="text-3xl font-bold text-gray-900">Gestión de Productos</h1>
+    <a 
+      class="px-5 py-2 bg-indigo-600 text-white rounded-lg font-semibold hover:bg-indigo-700 transition duration-300 shadow-md">
+      <!-- (Lo conectaremos después) -->
+      <!-- [routerLink]="['/admin/products/new']" -->
+      + Crear Nuevo Producto
+    </a>
+  </div>
+
+  <!-- Estado de Carga -->
+  <div *ngIf="isLoading()" class="text-center p-12">
+    <p class="text-lg text-gray-700">Cargando productos...</p>
+  </div>
+
+  <!-- Estado de Error -->
+  <div *ngIf="error() && !isLoading()" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg">
+    <strong>Error:</strong> {{ error() }}
+  </div>
+
+  <!-- Tabla de Productos -->
+  <div *ngIf="!isLoading() && !error() && productos().length > 0" class="bg-white shadow-lg rounded-lg overflow-hidden">
+    <table class="min-w-full divide-y divide-gray-200">
+      <thead class="bg-gray-50">
+        <tr>
+          <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+            ID
+          </th>
+          <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+            Nombre
+          </th>
+          <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+            Categoría
+          </th>
+          <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+            Precio
+          </th>
+          <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+            Stock
+          </th>
+          <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+            Estado
+          </th>
+          <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+            Acciones
+          </th>
+        </tr>
+      </thead>
+      <tbody class="bg-white divide-y divide-gray-200">
+        
+        <!-- Inicio del Loop -->
+        <tr *ngFor="let producto of productos()" class="hover:bg-gray-50">
+          <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+            {{ producto.id }}
+          </td>
+          <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800">
+            {{ producto.nombre }}
+          </td>
+          <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+            {{ producto.categoriaNombre }}
+          </td>
+          <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+            {{ producto.precio | currency:'S/ ' }}
+          </td>
+          <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+            {{ producto.stock }}
+          </td>
+          <td class="px-6 py-4 whitespace-nowrap">
+            <!-- Etiqueta de Estado -->
+            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full"
+                  [ngClass]="producto.activo ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'">
+              {{ producto.activo ? 'Activo' : 'Inactivo' }}
+            </span>
+          </td>
+          <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-2">
+            <!-- Botón de Editar -->
+            <button (click)="editProduct(producto.id)"
+                    class="text-indigo-600 hover:text-indigo-900 transition-colors duration-200">
+              Editar
+            </button>
+            
+            <!-- Botón de Desactivar (si está activo) -->
+            <button *ngIf="producto.activo" (click)="deleteProduct(producto)"
+                    class="text-red-600 hover:text-red-900 transition-colors duration-200">
+              Desactivar
+            </button>
+            
+            <!-- (Opcional) Botón de Activar (si está inactivo) -->
+            <!-- 
+            <button *ngIf="!producto.activo" (click)="activateProduct(producto.id)"
+                    class="text-green-600 hover:text-green-900 transition-colors duration-200">
+              Activar
+            </button> 
+            -->
+          </td>
+        </tr>
+        <!-- Fin del Loop -->
+
+      </tbody>
+    </table>
+  </div>
+</div>

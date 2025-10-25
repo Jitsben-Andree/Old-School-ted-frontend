@@ -1,1 +1,61 @@
-<p>admin-layout works!</p>
+<!-- Contenedor principal del Admin -->
+<div class="flex h-screen bg-gray-100">
+
+  <!-- 1. Barra Lateral de Navegación del Admin -->
+  <aside class="w-64 bg-gray-900 text-white flex flex-col p-4 shadow-lg">
+    <div class="text-2xl font-bold mb-6 pb-4 border-b border-gray-700">
+      Admin OldSchool
+    </div>
+    
+    <nav class="flex-grow">
+      <ul>
+        <!-- 
+          Usamos RouterLinkActive para resaltar el link activo. 
+          Necesitas añadir 'active-link' a tu CSS. 
+        -->
+        <li class="mb-2">
+          <a routerLink="/admin/products" 
+             routerLinkActive="active-link"
+             class="flex items-center p-3 rounded-lg hover:bg-gray-700 transition-colors duration-200">
+            <!-- (Icono Opcional) -->
+            <span class="ml-2">Gestionar Productos</span>
+          </a>
+        </li>
+        <li class="mb-2">
+          <a routerLink="/admin/orders" 
+             routerLinkActive="active-link"
+             class="flex items-center p-3 rounded-lg hover:bg-gray-700 transition-colors duration-200">
+            <!-- (Icono Opcional) -->
+            <span class="ml-2">Ver Pedidos</span>
+          </a>
+        </li>
+        <li class="mb-2">
+          <a routerLink="/admin/inventory" 
+             routerLinkActive="active-link"
+             class="flex items-center p-3 rounded-lg hover:bg-gray-700 transition-colors duration-200">
+            <!-- (Icono Opcional) -->
+            <span class="ml-2">Control de Inventario</span>
+          </a>
+        </li>
+      </ul>
+    </nav>
+    
+    <!-- Info del Usuario Admin -->
+    <div class="mt-auto border-t border-gray-700 pt-4">
+      <div class="text-sm">Logueado como:</div>
+      <div class="font-medium">{{ authService.currentUser()?.nombre }}</div>
+      <a routerLink="/" class="text-indigo-400 hover:underline text-sm mt-2 block">
+        Volver a la Tienda
+      </a>
+    </div>
+  </aside>
+
+  <!-- 2. Contenido Principal -->
+  <main class="flex-1 overflow-y-auto p-8">
+    <!-- 
+      Aquí es donde se cargarán las "sub-páginas" del admin 
+      (AdminProductsComponent, AdminOrdersComponent, etc.) 
+    -->
+    <router-outlet></router-outlet>
+  </main>
+</div>

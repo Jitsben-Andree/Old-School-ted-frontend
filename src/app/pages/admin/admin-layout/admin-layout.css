@@ -1,0 +1,8 @@
+/* Estilo para el link activo en la barra lateral.
+  'active-link' es el nombre que pusimos en [routerLinkActive] 
+*/
+.active-link {
+  background-color: #4f46e5; /* Color índigo de Tailwind */
+  color: white;
+  font-weight: 600;
+}
