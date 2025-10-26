@@ -2,7 +2,7 @@ import { Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { ProductService } from '../../../services/product';
-import { Producto } from '../../../models/producto';
+import { ProductoResponse } from '../../../models/producto';
 import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
@@ -18,7 +18,7 @@ export class AdminProductsComponent implements OnInit {
   private productService = inject(ProductService);
 
   // Signals para manejar el estado
-  public products = signal<Producto[]>([]);
+  public products = signal<ProductoResponse[]>([]);
   public loading = signal<boolean>(true);
   public error = signal<string | null>(null);
 

@@ -1,11 +1,12 @@
-export interface DetalleCarrito {
-  detalleCarritoId: number;
-  productoId: number;
-  productoNombre: string;
-  cantidad: number;
-  precioUnitario: number;
-  subtotal: number;
-}
+export interface DetalleCarrito { // Cambiar nombre a DetalleCarrito
+      detalleCarritoId: number;
+      productoId: number;
+      productoNombre: string;
+      cantidad: number;
+      precioUnitario: number; // Precio con descuento si aplica
+      subtotal: number;       // Subtotal con descuento
+      imageUrl?: string;      // <<< Añadir campo opcional
+    }
 
 export interface Carrito {
   carritoId: number;

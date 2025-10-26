@@ -1,138 +1,111 @@
-<div class="p-6">
-  <div class="flex justify-between items-center mb-6">
-    <h1 class="text-3xl font-bold text-gray-900">Gestión de Pedidos</h1>
+<div class="container mx-auto p-4 sm:p-6">
+  <h1 class="text-3xl font-bold mb-6 text-gray-800 border-b pb-3">Gestionar Pedidos</h1>
+
+  <!-- 1. Estado de Carga -->
+  <div *ngIf="isLoading()" class="text-center p-10">
+    <p class="text-lg text-gray-600 animate-pulse">Cargando pedidos...</p>
   </div>
 
-  <!-- Estado de Carga -->
-  @if (isLoading()) {
-    <div class="text-center p-12">
-      <p class="text-lg text-gray-700">Cargando pedidos...</p>
+  <!-- 2. Estado de Error General -->
+  <div *ngIf="error() && !isLoading()" class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-6 rounded-md shadow" role="alert">
+    <p class="font-bold">Error</p>
+    <p>{{ error() }}</p>
+  </div>
+
+  <!-- 3. Contenido Principal (Tabla) -->
+  <ng-container *ngIf="!isLoading() && !error()">
+    <div *ngIf="pedidos().length === 0" class="text-center text-gray-500 py-12">
+      No hay pedidos para mostrar.
     </div>
-  }
 
-  <!-- Estado de Error -->
-  @if (error() && !isLoading()) {
-    <div class="my-4 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg">
-      <strong>Error:</strong> {{ error() }}
-    </div>
-  }
-
-  <!-- Lista de Pedidos -->
-  @if (!isLoading() && !error()) {
-    <div class="space-y-6">
-      @for (pedido of pedidos(); track pedido.pedidoId) {
-        <div class="bg-white shadow-lg rounded-lg overflow-hidden">
-          
-          <!-- Encabezado del Pedido -->
-          <div class="bg-gray-50 p-4 border-b border-gray-200 grid grid-cols-2 md:grid-cols-4 gap-4">
-            <div>
-              <dt class="text-xs font-medium text-gray-500 uppercase">Pedido ID</dt>
-              <dd class="text-sm font-semibold text-gray-900">#{{ pedido.pedidoId }}</dd>
-            </div>
-            <div>
-              <dt class="text-xs font-medium text-gray-500 uppercase">Fecha</dt>
-              <dd class="text-sm text-gray-700">{{ pedido.fecha | date:'dd/MM/yyyy h:mm a' }}</dd>
-            </div>
-            <div>
-              <dt class="text-xs font-medium text-gray-500 uppercase">Cliente</dt>
-              <dd class="text-sm text-gray-700">ID Usuario: {{ pedido.usuarioId }}</dd> <!-- (Podrías añadir email/nombre si lo devuelves en el DTO) -->
-            </div>
-            <div>
-              <dt class="text-xs font-medium text-gray-500 uppercase">Total</dt>
-              <dd class="text-lg font-bold text-indigo-600">{{ pedido.total | currency:'S/ ' }}</dd>
-            </div>
-          </div>
-
-          <!-- Detalles y Estados -->
-          <div class="p-4 grid grid-cols-1 md:grid-cols-3 gap-6">
+    <div *ngIf="pedidos().length > 0" class="overflow-x-auto bg-white rounded-lg shadow">
+      <table class="min-w-full divide-y divide-gray-200">
+        <thead class="bg-gray-50">
+          <tr>
+            <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID Pedido</th>
+            <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Fecha</th>
+            <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Cliente</th>
+            <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Total</th>
+            <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Estado Pedido</th>
+            <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Estado Pago</th>
+            <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Estado Envío</th>
+            <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Detalles</th>
+          </tr>
+        </thead>
+        <tbody class="bg-white divide-y divide-gray-200">
+          <tr *ngFor="let pedido of pedidos(); trackBy: trackById" class="hover:bg-gray-50">
             
-            <!-- Columna de Items -->
-            <div class="md:col-span-1">
-              <h4 class="text-md font-semibold text-gray-800 mb-2">Items del Pedido</h4>
-              <ul class="divide-y divide-gray-200">
-                @for (item of pedido.detalles; track item.detallePedidoId) {
-                  <li class="py-2 flex justify-between items-center">
-                    <div>
-                      <p class="text-sm font-medium text-gray-900">{{ item.productoNombre }}</p>
-                      <p class="text-sm text-gray-500">
-                        {{ item.cantidad }} x {{ item.precioUnitario | currency:'S/ ' }}
-                      </p>
-                    </div>
-                    <p class="text-sm font-semibold text-gray-800">
-                      {{ (item.cantidad * item.precioUnitario) | currency:'S/ ' }}
-                    </p>
-                  </li>
-                }
-              </ul>
-            </div>
+            <!-- ID Pedido -->
+            <td class="px-4 py-3 whitespace-nowrap text-sm font-medium text-gray-900">#{{ pedido.pedidoId }}</td>
             
-            <!-- Columna de Dirección -->
-            <div class="md:col-span-1">
-              <h4 class="text-md font-semibold text-gray-800 mb-2">Envío</h4>
-              <address class="not-italic text-sm text-gray-600">
-                {{ pedido.direccionEnvio }}
-              </address>
-            </div>
+            <!-- Fecha -->
+            <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-600">{{ pedido.fecha | date:'dd/MM/yyyy HH:mm' }}</td>
+            
+            <!-- Cliente (Placeholder - necesitarías cargar el nombre del usuario si lo quieres) -->
+            <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-600">Usuario ID: {{ pedido.usuarioId }}</td> <!-- Asumiendo que PedidoResponse tiene usuarioId -->
+            
+            <!-- Total -->
+            <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-800 font-semibold">{{ pedido.total | currency:'S/ ' }}</td>
+            
+            <!-- Estado Pedido (Dropdown) -->
+            <td class="px-4 py-3 whitespace-nowrap text-sm">
+              <select [(ngModel)]="pedido.estado" 
+                      (change)="onEstadoPedidoChange(pedido.pedidoId, $event)"
+                      class="block w-full pl-3 pr-8 py-1.5 text-xs border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 rounded-md shadow-sm"
+                      [ngClass]="{
+                        'bg-yellow-100 text-yellow-800 border-yellow-300': pedido.estado === 'PENDIENTE',
+                        'bg-blue-100 text-blue-800 border-blue-300': pedido.estado === 'PAGADO',
+                        'bg-purple-100 text-purple-800 border-purple-300': pedido.estado === 'ENVIADO',
+                        'bg-green-100 text-green-800 border-green-300': pedido.estado === 'ENTREGADO',
+                        'bg-red-100 text-red-800 border-red-300': pedido.estado === 'CANCELADO'
+                      }">
+                <option *ngFor="let estado of estadosPedido" [value]="estado">{{ estado }}</option>
+              </select>
+            </td>
 
-            <!-- Columna de Estados (Selects) -->
-            <div class="md:col-span-1 space-y-4">
-              
-              <!-- Estado General -->
-              <div>
-                <label for="estado-pedido-{{pedido.pedidoId}}" class="block text-sm font-medium text-gray-700">Estado Pedido</label>
-                <select 
-                  id="estado-pedido-{{pedido.pedidoId}}" 
-                  [ngModel]="pedido.estado"
-                  (change)="onEstadoPedidoChange(pedido.pedidoId, $event)"
-                  [disabled]="updatingStatus()[pedido.pedidoId + '-pedido']"
-                  class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                  [ngClass]="getStatusColor(pedido.estado)">
-                  @for (estado of estadosPedidoList; track estado) {
-                    <option [value]="estado">{{ estado }}</option>
-                  }
-                </select>
-              </div>
+            <!-- Estado Pago (Dropdown) -->
+            <td class="px-4 py-3 whitespace-nowrap text-sm">
+               <select [(ngModel)]="pedido.estadoPago"
+                      (change)="onEstadoPagoChange(pedido.pedidoId, $event)"
+                      class="block w-full pl-3 pr-8 py-1.5 text-xs border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 rounded-md shadow-sm"
+                       [ngClass]="{
+                        'bg-yellow-100 text-yellow-800 border-yellow-300': pedido.estadoPago === 'PENDIENTE',
+                        'bg-green-100 text-green-800 border-green-300': pedido.estadoPago === 'COMPLETADO',
+                        'bg-red-100 text-red-800 border-red-300': pedido.estadoPago === 'FALLIDO'
+                      }">
+                <option *ngFor="let estado of estadosPago" [value]="estado">{{ estado }}</option>
+              </select>
+            </td>
 
-              <!-- Estado Pago -->
-              <div>
-                <label for="estado-pago-{{pedido.pedidoId}}" class="block text-sm font-medium text-gray-700">Estado Pago</label>
-                <select 
-                  id="estado-pago-{{pedido.pedidoId}}"
-                  [ngModel]="pedido.estadoPago"
-                  (change)="onEstadoPagoChange(pedido.pedidoId, $event)"
-                  [disabled]="updatingStatus()[pedido.pedidoId + '-pago']"
-                  class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                  [ngClass]="getStatusColor(pedido.estadoPago)">
-                  @for (estado of estadosPagoList; track estado) {
-                    <option [value]="estado">{{ estado }}</option>
-                  }
-                </select>
-              </div>
+            <!-- Estado Envío (Dropdown) -->
+             <td class="px-4 py-3 whitespace-nowrap text-sm">
+               <select [(ngModel)]="pedido.estadoEnvio"
+                      (change)="onEstadoEnvioChange(pedido.pedidoId, $event)"
+                      class="block w-full pl-3 pr-8 py-1.5 text-xs border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 rounded-md shadow-sm"
+                       [ngClass]="{
+                        'bg-gray-100 text-gray-800 border-gray-300': pedido.estadoEnvio === 'EN_PREPARACION',
+                        'bg-blue-100 text-blue-800 border-blue-300': pedido.estadoEnvio === 'EN_CAMINO',
+                        'bg-green-100 text-green-800 border-green-300': pedido.estadoEnvio === 'ENTREGADO',
+                        'bg-orange-100 text-orange-800 border-orange-300': pedido.estadoEnvio === 'RETRASADO'
+                      }">
+                <option *ngFor="let estado of estadosEnvio" [value]="estado">{{ estado }}</option>
+              </select>
+            </td>
 
-              <!-- Estado Envío -->
-              <div>
-                <label for="estado-envio-{{pedido.pedidoId}}" class="block text-sm font-medium text-gray-700">Estado Envío</label>
-                <select 
-                  id="estado-envio-{{pedido.pedidoId}}"
-                  [ngModel]="pedido.estadoEnvio"
-                  (change)="onEstadoEnvioChange(pedido.pedidoId, $event)"
-                  [disabled]="updatingStatus()[pedido.pedidoId + '-envio']"
-                  class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                  [ngClass]="getStatusColor(pedido.estadoEnvio)">
-                  @for (estado of estadosEnvioList; track estado) {
-                    <option [value]="estado">{{ estado }}</option>
-                  }
-                </select>
-              </div>
-            </div> <!-- Fin Columna Estados -->
+            <!-- Detalles (Modal o Link) - Placeholder -->
+            <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-500">
+                <button class="text-indigo-600 hover:text-indigo-900 text-xs">Ver Detalles</button>
+                <!-- Aquí podrías abrir un modal mostrando pedido.detalles -->
+                <ul class="text-xs list-disc list-inside mt-1 hidden"> <!-- Oculto por ahora -->
+                    <li *ngFor="let item of pedido.detalles">
+                        {{item.cantidad}}x {{item.productoNombre}} ({{item.subtotal | currency:'S/ '}})
+                    </li>
+                </ul>
+            </td>
 
-          </div>
-        </div>
-      } @empty {
-        <div class="text-center p-12 bg-white rounded-lg shadow">
-          <p class="text-lg text-gray-500">No se han encontrado pedidos.</p>
-        </div>
-      }
+          </tr>
+        </tbody>
+      </table>
     </div>
-  }
+  </ng-container>
 </div>

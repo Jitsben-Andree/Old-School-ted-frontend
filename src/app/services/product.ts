@@ -1,105 +1,163 @@
-import { Injectable, inject } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { inject, Injectable } from '@angular/core';
+import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
-import { catchError } from 'rxjs/operators';
-import { Producto } from '../models/producto';
-
-import { ProductoRequest } from '../models/producto-request';
+import { catchError, map, tap } from 'rxjs/operators';
+import { ProductoResponse } from '../models/producto';
 import { Categoria } from '../models/categoria';
-import { AuthService } from './auth'; //
+import { ProductoRequest } from '../models/producto-request';
+import { AuthService } from './auth';
+
+// Interfaz simple para la respuesta de subida de imagen
+interface ImageUploadResponse {
+  message: string;
+  imageUrl: string;
+}
+
 
 @Injectable({
   providedIn: 'root'
 })
 export class ProductService {
   private http = inject(HttpClient);
-  private authService = inject(AuthService); 
+  private authService = inject(AuthService);
+  private API_URL_PUBLIC = 'http://localhost:8080/api/v1/productos'; // URL base pública
+  private API_URL_ADMIN = 'http://localhost:8080/api/v1/admin/productos'; // <<< URL BASE ADMIN
+  private API_URL_FILES = 'http://localhost:8080/api/v1/files'; // URL base para archivos
+  private API_URL_CATEGORIAS = 'http://localhost:8080/api/v1/categorias'; // URL base pública categorías
+  private API_URL_CATEGORIAS_ADMIN = 'http://localhost:8080/api/v1/admin/categorias'; // <<< URL BASE ADMIN CATEGORÍAS (Asumiendo que también se mueven)
 
-  // Ajustamos las URLs base
-  private productApiUrl = 'http://localhost:8080/api/v1/productos';
-  private categoryApiUrl = 'http://localhost:8080/api/v1/categorias';
+  // --- Métodos Públicos ---
 
-  // --- Métodos de Cliente (Públicos) ---
-  getAllProductos(): Observable<Producto[]> {
-    return this.http.get<Producto[]>(this.productApiUrl).pipe(
+  getAllProductosActivos(): Observable<ProductoResponse[]> {
+    return this.http.get<ProductoResponse[]>(this.API_URL_PUBLIC).pipe(
       catchError(this.handleError)
     );
   }
 
-  getProductoById(id: number): Observable<Producto> {
-    return this.http.get<Producto>(`${this.productApiUrl}/${id}`).pipe(
+  getProductoById(id: number): Observable<ProductoResponse> {
+    return this.http.get<ProductoResponse>(`${this.API_URL_PUBLIC}/${id}`).pipe(
       catchError(this.handleError)
     );
   }
 
-  getProductosPorCategoria(nombreCategoria: string): Observable<Producto[]> {
-    return this.http.get<Producto[]>(`${this.productApiUrl}/categoria/${nombreCategoria}`).pipe(
+  getProductosByCategoria(nombreCategoria: string): Observable<ProductoResponse[]> {
+    const encodedCategory = encodeURIComponent(nombreCategoria);
+    return this.http.get<ProductoResponse[]>(`${this.API_URL_PUBLIC}/categoria/${encodedCategory}`).pipe(
       catchError(this.handleError)
     );
   }
 
   getAllCategorias(): Observable<Categoria[]> {
-    return this.http.get<Categoria[]>(this.categoryApiUrl).pipe(
+    // Usar URL pública de categorías
+    return this.http.get<Categoria[]>(this.API_URL_CATEGORIAS).pipe(
       catchError(this.handleError)
     );
   }
 
-  // --- Métodos de Administrador (Protegidos) ---
-  // 4. Helper para crear cabeceras con token
-  private getAuthHeaders(): HttpHeaders {
-    // ¡No necesitamos obtener el token manualmente!
-    // El JwtInterceptor lo hará por nosotros.
-    // Solo devolvemos cabeceras vacías o de tipo JSON.
-    return new HttpHeaders({
-      'Content-Type': 'application/json'
-    });
-  }
+  // --- Métodos de Administrador ---
 
-  // 5. Método para obtener TODOS los productos (activos e inactivos)
-  // (Nota: Tu API de Spring Boot en GET /productos solo devuelve activos)
-  // (Para un admin, idealmente necesitarías un endpoint GET /productos/all)
-  // (Por ahora, usaremos el mismo endpoint, pero lo ideal sería modificar tu backend)
-  getAllProductosAdmin(): Observable<Producto[]> {
-    // Asumiremos por ahora que el admin ve lo mismo que el público
-    // TODO: Crear un endpoint en Spring Boot GET /productos/all
-    return this.http.get<Producto[]>(this.productApiUrl, { headers: this.getAuthHeaders() }).pipe(
-      catchError(this.handleError)
+   getAllProductosAdmin(): Observable<ProductoResponse[]> {
+    // Usar URL admin
+    return this.http.get<ProductoResponse[]>(`${this.API_URL_ADMIN}/all`, { headers: this.createAuthHeaders() }).pipe(
+      catchError(this.handleAdminError)
     );
   }
 
-  // 6. Método para crear un producto
-  createProducto(request: ProductoRequest): Observable<Producto> {
-    return this.http.post<Producto>(this.productApiUrl, request, { headers: this.getAuthHeaders() }).pipe(
-      catchError(this.handleError)
+  createProducto(request: ProductoRequest): Observable<ProductoResponse> {
+     // Usar URL admin
+    return this.http.post<ProductoResponse>(this.API_URL_ADMIN, request, { headers: this.createAuthHeaders() }).pipe(
+      catchError(this.handleAdminError)
     );
   }
 
-  // 7. Método para actualizar un producto
-  updateProducto(id: number, request: ProductoRequest): Observable<Producto> {
-    return this.http.put<Producto>(`${this.productApiUrl}/${id}`, request, { headers: this.getAuthHeaders() }).pipe(
-      catchError(this.handleError)
+  updateProducto(id: number, request: ProductoRequest): Observable<ProductoResponse> {
+     // Usar URL admin
+    return this.http.put<ProductoResponse>(`${this.API_URL_ADMIN}/${id}`, request, { headers: this.createAuthHeaders() }).pipe(
+      catchError(this.handleAdminError)
     );
   }
 
-  // 8. Método para eliminar (desactivar) un producto
   deleteProducto(id: number): Observable<void> {
-    return this.http.delete<void>(`${this.productApiUrl}/${id}`, { headers: this.getAuthHeaders() }).pipe(
-      catchError(this.handleError)
+     // Usar URL admin
+    return this.http.delete<void>(`${this.API_URL_ADMIN}/${id}`, { headers: this.createAuthHeaders() }).pipe(
+      catchError(this.handleAdminError)
+    );
+  }
+
+  uploadProductImage(productId: number, file: File): Observable<ImageUploadResponse> {
+    const formData = new FormData();
+    formData.append('file', file, file.name);
+    // La URL de subida de archivos se mantiene separada, ya la corregimos antes
+    return this.http.post<ImageUploadResponse>(`${this.API_URL_FILES}/upload/producto/${productId}`, formData, {
+      headers: this.createAuthHeaders(true)
+    }).pipe(
+      catchError(this.handleAdminError)
+    );
+  }
+
+  // --- Métodos de Admin para Categorías ---
+   createCategoria(request: { nombre: string, descripcion?: string }): Observable<Categoria> {
+    // Asumiendo que CategoriaController también se movió a /admin
+    return this.http.post<Categoria>(this.API_URL_CATEGORIAS_ADMIN, request, { headers: this.createAuthHeaders() }).pipe(
+      catchError(this.handleAdminError)
+    );
+  }
+
+  updateCategoria(id: number, request: { nombre: string, descripcion?: string }): Observable<Categoria> {
+    // Asumiendo que CategoriaController también se movió a /admin
+    return this.http.put<Categoria>(`${this.API_URL_CATEGORIAS_ADMIN}/${id}`, request, { headers: this.createAuthHeaders() }).pipe(
+      catchError(this.handleAdminError)
+    );
+  }
+
+  deleteCategoria(id: number): Observable<void> {
+    // Asumiendo que CategoriaController también se movió a /admin
+    return this.http.delete<void>(`${this.API_URL_CATEGORIAS_ADMIN}/${id}`, { headers: this.createAuthHeaders() }).pipe(
+      catchError(this.handleAdminError)
+    );
+  }
+
+  // --- Métodos para Asociar/Desasociar Promociones ---
+
+  associatePromocionToProducto(productoId: number, promocionId: number): Observable<void> {
+    // Usar la NUEVA URL bajo /admin/productos
+    const url = `${this.API_URL_ADMIN}/${productoId}/promociones/${promocionId}`; // <<< CORREGIDO
+    return this.http.post<void>(url, null, { headers: this.createAuthHeaders() }).pipe(
+      catchError(this.handleAdminError)
+    );
+  }
+
+  disassociatePromocionFromProducto(productoId: number, promocionId: number): Observable<void> {
+     // Usar la NUEVA URL bajo /admin/productos
+    const url = `${this.API_URL_ADMIN}/${productoId}/promociones/${promocionId}`; // <<< CORREGIDO
+    return this.http.delete<void>(url, { headers: this.createAuthHeaders() }).pipe(
+      catchError(this.handleAdminError)
     );
   }
 
 
-  // --- Manejo de Errores ---
-  private handleError(error: any): Observable<never> {
-    console.error('Error en el servicio de productos:', error);
-    let errorMessage = 'Error desconocido. Intente de nuevo más tarde.';
-    if (error.error instanceof ErrorEvent) {
-      // Error del lado del cliente
-      errorMessage = `Error: ${error.error.message}`;
-    } else if (error.status) {
-      // Error del lado del backend
-      errorMessage = `Error ${error.status}: ${error.statusText} - ${error.error?.message || 'Error del servidor'}`;
-    }
-    return throwError(() => new Error(errorMessage));
+  // --- Helper y Manejadores de Errores (sin cambios) ---
+  private createAuthHeaders(isFormData: boolean = false): HttpHeaders { /* ... código existente ... */
+     const token = this.authService.jwtToken();
+     if (!token) {
+         console.error("Token no encontrado para crear cabeceras");
+         return new HttpHeaders();
+     }
+     return new HttpHeaders().set('Authorization', `Bearer ${token}`);
+  }
+  private handleError(error: HttpErrorResponse): Observable<never> { /* ... código existente ... */
+    console.error("ProductService Error (Público):", error.message);
+    let userMessage = 'Ocurrió un error al procesar la solicitud.';
+    if (error.status === 404) userMessage = 'El recurso solicitado no fue encontrado.';
+    else if (error.status === 0) userMessage = 'No se pudo conectar con el servidor. Verifica tu conexión.';
+    return throwError(() => new Error(userMessage));
+  }
+  private handleAdminError(error: HttpErrorResponse): Observable<never> { /* ... código existente ... */
+    console.error("ProductService Error (Admin):", error);
+    const message = error.error?.message || error.message || 'Ocurrió un error en la operación de administrador.';
+     if (error.status === 403) return throwError(() => new Error('No tienes permiso para realizar esta acción.'));
+      if (error.status === 401) return throwError(() => new Error('Tu sesión ha expirado. Por favor, inicia sesión de nuevo.'));
+    return throwError(() => new Error(message));
   }
 }
+

@@ -2,13 +2,20 @@
   <div class="container mx-auto p-4 sm:p-8">
     <h1 class="text-3xl font-bold mb-6 text-gray-900">Finalizar Compra</h1>
 
-    <!-- Verificar si tenemos un carrito -->
-    <ng-container *ngIf="cart">
-      <form #checkoutForm="ngForm" (ngSubmit)="onSubmit(checkoutForm)">
+    <!-- 1. Estado de Carga -->
+    @if (isLoading()) {
+      <div class="text-center p-12">
+          <p class="text-lg text-gray-700 animate-pulse">Preparando tu orden...</p>
+      </div>
+    }
+
+    <!-- 2. Contenedor del Checkout -->
+    @if (!isLoading() && cart(); as currentCart) {
+      <form [formGroup]="checkoutForm" (ngSubmit)="onSubmit()">
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
 
           <!-- Columna Izquierda: Formulario -->
-          <div class="lg:col-span-2 bg-white rounded-lg shadow-lg p-6">
+          <div class="lg:col-span-2 bg-white rounded-xl shadow-2xl p-6">
             <h2 class="text-2xl font-semibold mb-6 border-b pb-4">Detalles de Envío y Pago</h2>
 
             <!-- Dirección de Envío -->
@@ -16,14 +23,19 @@
               <label for="direccionEnvio" class="mb-3 block text-base font-medium text-[#07074D]">
                 Dirección de Envío
               </label>
-              <input type="text" name="direccionEnvio" id="direccionEnvio" placeholder="Av. Siempre Viva 123, Sprinfield"
-                     [(ngModel)]="pedidoRequest.direccionEnvio" #direccion="ngModel" required minlength="10"
+              <input type="text" id="direccionEnvio" formControlName="direccionEnvio" placeholder="Av. Siempre Viva 123, Sprinfield"
                      class="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-indigo-600 focus:shadow-md" />
-              
-              <div *ngIf="direccion.invalid && (direccion.dirty || direccion.touched)" class="text-red-500 text-sm mt-1">
-                <span *ngIf="direccion.errors?.['required']">La dirección es requerida.</span>
-                <span *ngIf="direccion.errors?.['minlength']">La dirección debe tener al menos 10 caracteres.</span>
-              </div>
+
+              @if (checkoutForm.get('direccionEnvio')?.invalid && checkoutForm.get('direccionEnvio')?.touched) {
+                <div class="text-red-500 text-xs mt-1">
+                  @if (checkoutForm.get('direccionEnvio')?.errors?.['required']) {
+                    <span>La dirección es requerida.</span>
+                  }
+                  @if (checkoutForm.get('direccionEnvio')?.errors?.['minlength']) {
+                    <span>La dirección debe tener al menos 10 caracteres.</span>
+                  }
+                </div>
+              }
             </div>
 
             <!-- Método de Pago -->
@@ -31,73 +43,87 @@
               <label for="metodoPagoInfo" class="mb-3 block text-base font-medium text-[#07074D]">
                 Método de Pago
               </label>
-              <select name="metodoPagoInfo" id="metodoPagoInfo"
-                      [(ngModel)]="pedidoRequest.metodoPagoInfo" #metodo="ngModel" required
+              <select id="metodoPagoInfo" formControlName="metodoPagoInfo"
                       class="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-indigo-600 focus:shadow-md">
-                <!-- Estos valores deben coincidir con tu Enum "MetodoPago" del backend -->
-                <option value="Yape">Yape</option>
-                <option value="Plin">Plin</option>
-                <option value="Tarjeta">Tarjeta de Crédito/Débito</option>
-                <option value="PayPal">PayPal</option>
-                <option value="Transferencia">Transferencia Bancaria</option>
+                @for (metodo of metodosPago; track metodo.value) {
+                  <option [value]="metodo.value">{{ metodo.display }}</option>
+                }
               </select>
-              
-              <div *ngIf="metodo.invalid && (metodo.dirty || metodo.touched)" class="text-red-500 text-sm mt-1">
-                <span *ngIf="metodo.errors?.['required']">Selecciona un método de pago.</span>
-              </div>
+
+              @if (checkoutForm.get('metodoPagoInfo')?.invalid && checkoutForm.get('metodoPagoInfo')?.touched) {
+                <div class="text-red-500 text-xs mt-1">
+                  <span>Selecciona un método de pago.</span>
+                </div>
+              }
             </div>
 
             <!-- Mensaje de Error del Backend -->
-            <div *ngIf="errorMessage && !isLoading" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg relative my-4" role="alert">
-              <span class="block sm:inline">{{ errorMessage }}</span>
-            </div>
+            @if (errorMessage()) {
+              <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg relative my-4" role="alert">
+                <span class="block sm:inline">{{ errorMessage() }}</span>
+              </div>
+            }
 
           </div>
 
           <!-- Columna Derecha: Resumen del Pedido -->
-          <div class="lg:col-span-1 bg-white rounded-lg shadow-lg p-6 h-fit sticky top-24">
-            <h2 class="text-xl font-semibold mb-4 border-b pb-2">Resumen de tu Orden</h2>
-            
-            <!-- Lista de items (simplificada) -->
+          <div class="lg:col-span-1 bg-white rounded-xl shadow-2xl p-6 h-fit sticky top-4">
+            <h2 class="text-2xl font-bold mb-4 border-b pb-3">Resumen del Pedido</h2>
+
+            <!-- Lista de items (scrollable) -->
             <div class="space-y-3 max-h-60 overflow-y-auto mb-4 border-b pb-4">
-              <div *ngFor="let item of cart.items" class="flex justify-between items-center text-sm">
-                <div>
-                  <span class="font-medium text-gray-800">{{ item.productoNombre }}</span>
-                  <span class="text-gray-500"> (x{{ item.cantidad }})</span>
+              @for (item of currentCart.items; track item.detalleCarritoId) {
+                <div class="flex justify-between items-center text-sm">
+                  <div>
+                    <span class="font-medium text-gray-800">{{ item.productoNombre }}</span>
+                    <span class="text-gray-500"> (x{{ item.cantidad }})</span>
+                    <span class="text-gray-500 block text-xs">Unitario: {{ item.precioUnitario | currency:'S/ ' }}</span>
+                  </div>
+                  <span class="text-gray-700 font-medium">{{ item.subtotal | currency:'S/ ' }}</span>
                 </div>
-                <span class="text-gray-700">$ {{ item.subtotal | number:'1.2-2' }}</span>
-              </div>
+              }
             </div>
-            
+
             <!-- Total -->
             <div class="space-y-2">
-              <div class="flex justify-between">
-                <span class="text-gray-600">Subtotal</span>
-                <span class="font-medium">$ {{ cart.total | number:'1.2-2' }}</span>
+              <div class="flex justify-between text-lg">
+                <span class="text-gray-700">Subtotal</span>
+                <span class="font-medium">{{ currentCart.total | currency:'S/ ' }}</span>
               </div>
-              <div class="flex justify-between">
-                <span class="text-gray-600">Envío</span>
-                <span class="font-medium">Gratis</span>
+              <div class="flex justify-between text-lg">
+                <span class="text-gray-700">Envío</span>
+                <span class="font-medium text-green-600">Gratis</span>
               </div>
               <div class="border-t pt-4 mt-4 flex justify-between items-center">
                 <span class="text-xl font-bold text-gray-900">Total a Pagar</span>
-                <span class="text-2xl font-bold text-indigo-600">$ {{ cart.total | number:'1.2-2' }}</span>
+                <span class="text-3xl font-extrabold text-indigo-700">{{ currentCart.total | currency:'S/ ' }}</span>
               </div>
             </div>
 
             <!-- Botón de Confirmar Pedido -->
-            <button type="submit" [disabled]="checkoutForm.invalid || isLoading"
-                    class="mt-6 w-full bg-green-600 text-white py-3 rounded-lg font-semibold hover:bg-green-700 transition duration-300 disabled:bg-gray-400">
-              <span *ngIf="isLoading; else notLoading">Procesando...</span>
-              <ng-template #notLoading>Confirmar Pedido</ng-template>
+            <button type="submit" [disabled]="checkoutForm.invalid || isLoading()"
+                    class="mt-6 w-full bg-green-600 text-white py-3 rounded-lg font-semibold hover:bg-green-700 transition duration-300 shadow-lg disabled:bg-gray-400">
+               <!-- Usamos @if y @else -->
+               @if (isLoading()) {
+                  <span>Procesando...</span>
+               } @else {
+                  <span>Confirmar Pedido</span>
+               }
             </button>
-            <a routerLink="/cart" class="text-center block mt-3 text-indigo-600 hover:underline">
+            <a routerLink="/cart" class="text-center block mt-3 text-indigo-600 hover:underline text-sm">
               Volver al carrito
             </a>
           </div>
 
         </div>
       </form>
-    </ng-container>
+    } @else if (!isLoading() && !cart()) {
+         <!-- Mensaje si no se pudo cargar el carrito -->
+         <div class="text-center text-gray-500 mt-12">
+            No se pudo cargar la información del carrito. Intenta volver al carrito.
+            <a routerLink="/cart" class="text-indigo-600 hover:underline">Volver al carrito</a>
+         </div>
+    } <!-- Fin del @if !isLoading -->
   </div>
 </div>
+
