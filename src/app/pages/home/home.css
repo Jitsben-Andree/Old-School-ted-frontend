@@ -1,25 +1,413 @@
-.product-card {
-  transition: box-shadow 0.3s ease, transform 0.3s ease;
+/* ---------------------------------- */
+/* SECCIÓN 1: SLIDER PRINCIPAL (CSS) */
+/* ---------------------------------- */
+.page-background {
+/* ... (sin cambios) ... */
+  width: 100%;
+  background-color: #f0f2f5; /* Un fondo suave */
+  /* padding: 2rem 0; */ /* <<< ELIMINADO para que el slider toque los bordes */
+  padding: 0;
 }
 
-.product-card:hover {
-  box-shadow: 0 20px 30px rgba(99, 102, 241, 0.4);
-  transform: translateY(-6px);
+.slider {
+/* ... (sin cambios) ... */
+  width: 100%; /* <<< CAMBIADO: Ancho completo */
+  /* max-width: 1200px; */ /* <<< ELIMINADO */
+  height: 500px; /* Altura fija (El usuario dijo que estaba bien) */
+  max-height: 70vh; /* Máximo 70% de la altura de la pantalla */
+  /* margin: auto; */ /* <<< ELIMINADO (ya no se centra) */
+  overflow: hidden;
+  position: relative;
+  /* border-radius: 1.5rem; */ /* <<< ELIMINADO (no se ve bien en full-width) */
+  /* box-shadow: ...; */ /* <<< ELIMINADO (no se ve bien en full-width) */
+  background-color: #111827; /* Añadir un fondo oscuro por si 'contain' deja barras */
 }
 
-.offer-badge {
-  animation-name: pulseGlow;
-  animation-duration: 2.5s;
-  animation-iteration-count: infinite;
-  animation-timing-function: ease-in-out;
-  box-shadow: 0 0 8px rgba(220, 38, 38, 0.8);
+.slides {
+/* ... (sin cambios) ... */
+  width: 500%;
+  height: 100%;
+  display: flex;
 }
 
-@keyframes pulseGlow {
-  0%, 100% {
-    box-shadow: 0 0 6px rgba(220, 38, 38, 0.5);
-  }
-  50% {
-    box-shadow: 0 0 12px rgba(220, 38, 38, 1);
-  }
+.slides input {
+/* ... (sin cambios) ... */
+  display: none;
 }
+
+.slide {
+/* ... (sin cambios) ... */
+  width: 20%;
+  height: 100%; /* Asegura que la imagen ocupe todo el alto */
+  transition: 2s;
+  position: relative;
+}
+
+.slide img {
+/* ... (sin cambios) ... */
+  width: 100%;
+  height: 100%;
+  object-fit: contain; /* <<< CORREGIDO: de 'cover' a 'contain' */
+  filter: brightness(0.8); /* Ajustar brillo si 'contain' es muy oscuro */
+}
+
+/* Contenido de texto sobre el slide */
+.slide-info {
+/* ... (sin cambios) ... */
+  position: absolute;
+  top: 50%;
+  left: 10%;
+  transform: translateY(-50%);
+  color: white;
+  z-index: 10;
+  width: 40%;
+  text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.7);
+}
+
+.slide-title {
+/* ... (sin cambios) ... */
+  font-size: 2.75rem; /* 44px */
+  font-weight: 800; /* Extrabold */
+  line-height: 1.1;
+  margin-bottom: 1rem;
+}
+
+.slide-subtitle {
+/* ... (sin cambios) ... */
+  font-size: 1.125rem; /* 18px */
+  font-weight: 300; /* Light */
+  opacity: 0.9;
+  margin-bottom: 1.5rem;
+}
+
+.slide-btn {
+/* ... (sin cambios) ... */
+  display: inline-block;
+  background-color: #4f46e5; /* Indigo-600 */
+  color: white;
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.5rem; /* 8px */
+  text-decoration: none;
+  font-weight: 600; /* Semibold */
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+}
+.slide-btn:hover {
+/* ... (sin cambios) ... */
+  background-color: #4338ca; /* Indigo-700 */
+  transform: translateY(-2px);
+  box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+}
+
+/* Imagen del jugador */
+.player-img {
+/* ... (sin cambios) ... */
+  position: absolute;
+  bottom: 0;
+  right: 5%;
+  height: 90%;
+  width: auto;
+  object-fit: contain;
+  z-index: 5;
+  /* Efecto sutil */
+  filter: drop-shadow(0 10px 15px rgba(0,0,0,0.4));
+}
+
+/* Animación sutil de zoom */
+@keyframes pulseZoom {
+/* ... (sin cambios) ... */
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.02); }
+}
+.pulse-zoom {
+/* ... (sin cambios) ... */
+  animation: pulseZoom 6s ease-in-out infinite;
+}
+
+
+/* Lógica de CSS para mover slides */
+#radio1:checked ~ .first { margin-left: 0; }
+/* ... (sin cambios) ... */
+#radio2:checked ~ .first { margin-left: -20%; }
+#radio3:checked ~ .first { margin-left: -40%; }
+#radio4:checked ~ .first { margin-left: -60%; }
+
+/* Navegación manual (botones radio) */
+.navigation-manual {
+/* ... (sin cambios) ... */
+  position: absolute;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  z-index: 10;
+}
+.manual-btn {
+/* ... (sin cambios) ... */
+  border: 2px solid #fff;
+  padding: 5px;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: 0.5s;
+  margin: 0 5px;
+}
+.manual-btn:hover { background: #4f46e5; }
+#radio1:checked ~ .navigation-manual .manual-btn:nth-child(1),
+/* ... (sin cambios) ... */
+#radio2:checked ~ .navigation-manual .manual-btn:nth-child(2),
+#radio3:checked ~ .navigation-manual .manual-btn:nth-child(3),
+#radio4:checked ~ .navigation-manual .manual-btn:nth-child(4) {
+  background: #4f46e5;
+}
+
+/* Navegación automática (se mueve con el tiempo) */
+.navigation-auto {
+/* ... (sin cambios) ... */
+  position: absolute;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  z-index: 9; /* Detrás de la manual */
+}
+.navigation-auto div {
+/* ... (sin cambios) ... */
+  border: 2px solid #4f46e5;
+  padding: 5px;
+  border-radius: 50%;
+  transition: 0.5s;
+  margin: 0 5px;
+}
+#radio1:checked ~ .navigation-auto .auto-btn1,
+/* ... (sin cambios) ... */
+#radio2:checked ~ .navigation-auto .auto-btn2,
+#radio3:checked ~ .navigation-auto .auto-btn3,
+#radio4:checked ~ .navigation-auto .auto-btn4 {
+  background: #4f46e5;
+}
+
+/* Flechas de navegación manual */
+.slider .prev, .slider .next {
+/* ... (sin cambios) ... */
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 10;
+  background-color: rgba(0, 0, 0, 0.3);
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  font-size: 1.5rem;
+  font-weight: bold;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  transition: 0.3s;
+}
+.slider .prev:hover, .slider .next:hover {
+/* ... (sin cambios) ... */
+  background-color: rgba(0, 0, 0, 0.6);
+}
+.slider .prev { left: 1rem; }
+/* ... (sin cambios) ... */
+.slider .next { right: 1rem; }
+
+
+/* ---------------------------------- */
+/* SECCIÓN 2: QUIÉNES SOMOS (CSS) */
+/* ---------------------------------- */
+.about-section {
+/* ... (sin cambios) ... */
+  width: 100%;
+  padding: 4rem 2rem;
+  background-color: #ffffff; /* Fondo blanco */
+}
+.about-container {
+/* ... (sin cambios) ... */
+  display: flex;
+  flex-wrap: wrap; /* Permite que se apile en móvil */
+  align-items: center;
+  justify-content: center;
+  max-width: 1200px;
+  margin: auto;
+  gap: 3rem;
+  position: relative; /* Para el círculo */
+}
+.about-image {
+/* ... (sin cambios) ... */
+  flex: 1 1 300px; /* Crecer, encoger, base */
+  max-width: 500px;
+  position: relative;
+  z-index: 5;
+}
+.about-image img {
+/* ... (sin cambios) ... */
+  width: 100%;
+  height: auto;
+  border-radius: 1rem;
+  box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.2), 0 8px 10px -6px rgb(0 0 0 / 0.2);
+}
+.about-text {
+/* ... (sin cambios) ... */
+  flex: 1 1 300px;
+  max-width: 600px;
+  color: #1f2937; /* Gray-800 */
+}
+.about-text h2 {
+/* ... (sin cambios) ... */
+  font-size: 2.25rem; /* 36px */
+  font-weight: 700; /* Bold */
+  color: #111827; /* Gray-900 */
+  margin-bottom: 1.5rem;
+  border-bottom: 3px solid #4f46e5; /* Indigo-600 */
+  padding-bottom: 0.5rem;
+  display: inline-block;
+}
+.about-text p {
+/* ... (sin cambios) ... */
+  font-size: 1rem; /* 16px */
+  line-height: 1.75;
+  color: #374151; /* Gray-700 */
+  margin-bottom: 1rem;
+}
+
+/* Círculo animado */
+.circle-background {
+/* ... (sin cambios) ... */
+  position: absolute;
+  top: 50%;
+  left: 30%;
+  transform: translate(-50%, -50%);
+  width: 500px;
+  height: 500px;
+  z-index: 1;
+  opacity: 0.1; /* Muy sutil */
+}
+.rotating-circle {
+/* ... (sin cambios) ... */
+  width: 100%;
+  height: 100%;
+  animation: rotate 60s linear infinite;
+}
+@keyframes rotate {
+/* ... (sin cambios) ... */
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+
+/* ---------------------------------- */
+/* SECCIÓN 3: COLECCIONES (CSS) */
+/* ---------------------------------- */
+.manual-slider-section {
+/* ... (sin cambios) ... */
+  width: 100%;
+  padding: 4rem 0;
+  background-color: #f9fafb; /* Gray-50 */
+}
+.section-title {
+/* ... (sin cambios) ... */
+  text-align: center;
+  font-size: 2.5rem; /* 40px */
+  font-weight: 800; /* Extrabold */
+  color: #111827; /* Gray-900 */
+  margin-bottom: 2.5rem;
+}
+.manual-slider-container {
+/* ... (sin cambios) ... */
+  width: 90%;
+  max-width: 1200px;
+  margin: auto;
+  position: relative;
+}
+.manual-slider {
+/* ... (sin cambios) ... */
+  display: flex;
+  overflow-x: auto; /* Permite scroll horizontal */
+  scroll-behavior: smooth;
+  gap: 1.5rem; /* 24px */
+  padding: 1rem 0;
+  scrollbar-width: none; /* Ocultar scrollbar (Firefox) */
+  -ms-overflow-style: none; /* Ocultar scrollbar (IE/Edge) */
+}
+.manual-slider::-webkit-scrollbar {
+/* ... (sin cambios) ... */
+  display: none; /* Ocultar scrollbar (Chrome/Safari) */
+}
+.manual-item {
+/* ... (sin cambios) ... */
+  flex: 0 0 300px; /* No crecer, no encoger, base 300px */
+  border-radius: 1rem;
+  overflow: hidden;
+  box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+  transition: 0.3s;
+}
+.manual-item:hover {
+/* ... (sin cambios) ... */
+  transform: translateY(-5px);
+  box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+}
+.manual-item img {
+/* ... (sin cambios) ... */
+  width: 100%;
+  height: 350px;
+  object-fit: cover;
+}
+.manual-item p {
+/* ... (sin cambios) ... */
+  text-align: center;
+  font-weight: 600; /* Semibold */
+  color: #1f2937; /* Gray-800 */
+  padding: 1rem;
+  background-color: white;
+}
+/* Flechas para el slider manual */
+.arrow {
+/* ... (sin cambios) ... */
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background-color: white;
+  color: #374151; /* Gray-700 */
+  border: none;
+  border-radius: 50%;
+  width: 3rem;
+  height: 3rem;
+  font-size: 1.5rem;
+  font-weight: bold;
+  cursor: pointer;
+  z-index: 10;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: 0.3s;
+}
+.arrow:hover {
+/* ... (sin cambios) ... */
+  background-color: #4f46e5; /* Indigo-600 */
+  color: white;
+}
+.arrow.left { left: -1.5rem; }
+/* ... (sin cambios) ... */
+.arrow.right { right: -1.5rem; }
+
+
+/* ---------------------------------- */
+/* SECCIÓN 4: CATÁLOGO (CSS) */
+/* ---------------------------------- */
+.catalogo-section {
+/* ... (sin cambios) ... */
+  width: 100%;
+  padding: 4rem 0;
+  background-color: #ffffff; /* Fondo blanco */
+}
+/* .catalogo-container usa Tailwind (container mx-auto etc) */
+/* Estilos adicionales para line-clamp (si Tailwind no lo tiene por defecto) */
+.line-clamp-2 {
+/* ... (sin cambios) ... */
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
