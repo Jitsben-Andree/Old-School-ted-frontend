@@ -5,7 +5,8 @@ export interface DetalleCarrito { // Cambiar nombre a DetalleCarrito
       cantidad: number;
       precioUnitario: number; // Precio con descuento si aplica
       subtotal: number;       // Subtotal con descuento
-      imageUrl?: string;      // <<< Añadir campo opcional
+      imageUrl?: string;
+      stockActual?: number;      
     }
 
 export interface Carrito {

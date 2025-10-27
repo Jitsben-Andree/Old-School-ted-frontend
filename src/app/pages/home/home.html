@@ -1,97 +1,137 @@
-<div class="container mx-auto p-4 sm:p-8">
-  <h1 class="text-4xl font-extrabold mb-8 text-center text-gray-900">Catálogo de Camisetas Retro</h1>
+<!-- catalogo.component.html -->
+<div class="min-h-screen bg-gradient-to-b from-indigo-100 via-white to-indigo-50 py-12">
+  <div class="container mx-auto px-6 sm:px-8 lg:px-10">
+    <h1 class="text-5xl font-extrabold mb-10 text-center text-indigo-900 drop-shadow-lg">Catálogo de Camisetas Retro</h1>
 
-  <!-- 1. Estado de Carga -->
-  @if (isLoading()) {
-    <div class="text-center p-12">
-      <p class="text-xl text-gray-700 animate-pulse">Cargando productos...</p>
-    </div>
-  }
+    <!-- Estados: Loading -->
+    @if (isLoading()) {
+      <div class="space-y-5 max-w-5xl mx-auto">
+        <div class="rounded-3xl bg-white/70 backdrop-blur-md border border-white/50 p-8 animate-pulse shadow-xl">
+          <div class="h-7 w-1/2 bg-white/60 rounded mb-6"></div>
+          <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-6">
+            <div class="h-56 rounded-xl bg-white/60"></div>
+            <div class="h-56 rounded-xl bg-white/60"></div>
+            <div class="h-56 rounded-xl bg-white/60"></div>
+            <div class="h-56 rounded-xl bg-white/60"></div>
+          </div>
+        </div>
+      </div>
+    }
 
-  <!-- 2. Estado de Error -->
-  @if (error() && !isLoading()) {
-    <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg mb-6 max-w-2xl mx-auto">
-      <strong>Error:</strong> {{ error() }}
-    </div>
-  }
+    <!-- Estado: Error -->
+    @if (error() && !isLoading()) {
+      <div class="max-w-3xl mx-auto mb-8">
+        <div class="bg-red-50 border border-red-300 text-red-700 px-5 py-4 rounded-xl shadow-lg flex items-center space-x-3">
+          <strong class="font-semibold text-lg">Error:</strong>
+          <span class="text-base">{{ error() }}</span>
+        </div>
+      </div>
+    }
 
-  <!-- 3. Contenedor de Productos (Grid) -->
-  @if (!isLoading() && !error()) {
-    @if (products().length > 0) {
-      <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 lg:gap-8">
-        <!-- Loop de Productos - Usamos @for -->
-        @for (prod of products(); track prod.id) {
-          <div class="bg-white rounded-xl shadow-lg overflow-hidden flex flex-col transition duration-300 hover:shadow-2xl hover:scale-105 group">
+    <!-- Contenedor de Productos -->
+    @if (!isLoading() && !error()) {
+      @if (products().length > 0) {
 
-            <!-- Imagen del Producto -->
-            <div class="relative">
-              <img [src]="prod.imageUrl || 'https://placehold.co/400x400/4c4180/ffffff?text=OS+Tee'"
-                   [alt]="prod.nombre"
-                   class="w-full h-56 object-cover">
-              <!-- Badge de Promoción (si aplica) -->
-              @if (prod.nombrePromocion) {
-                <span class="absolute top-2 right-2 bg-red-600 text-white text-xs font-bold px-2 py-1 rounded-full shadow">
-                  ¡OFERTA!
-                </span>
-              }
-            </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8 lg:gap-10">
 
-            <!-- Contenido de la Tarjeta -->
-            <div class="p-4 flex flex-col flex-grow">
-              <h2 class="text-lg font-bold text-gray-900 truncate mb-1 group-hover:text-indigo-600" title="{{prod.nombre}}">{{ prod.nombre }}</h2>
-              <p class="text-sm text-gray-600 mb-2 line-clamp-2">{{ prod.descripcion || 'Sin descripción' }}</p>
+          <!-- Loop de Productos -->
+          @for (prod of products(); track prod.id) {
+            <a [routerLink]="['/producto', prod.id]"
+               class="group transform transition duration-300 hover:scale-105 focus:outline-none shadow-lg rounded-3xl"
+               aria-label="Ver producto {{ prod.nombre }}">
 
-              <!-- Sección de Precios -->
-              <div class="flex flex-col mt-auto pt-2">
-                <div class="flex justify-between items-baseline mb-1">
-                  <!-- Precio Final (con descuento si aplica) -->
-                  <span class="text-2xl font-extrabold text-indigo-700">{{ prod.precio | currency:'S/ ' }}</span>
-                  <!-- Precio Original (tachado, si hay descuento) -->
-                  @if (prod.precioOriginal && prod.precioOriginal !== prod.precio) {
-                    <span class="text-sm text-gray-500 line-through ml-2">
-                      {{ prod.precioOriginal | currency:'S/ ' }}
+              <!-- Tarjeta (glassmorphism con efecto hover) -->
+              <div class="h-full flex flex-col rounded-3xl bg-white/70 backdrop-blur-md border border-white/40 shadow-lg overflow-hidden product-card">
+                <!-- Imagen -->
+                <div class="relative overflow-hidden rounded-t-3xl">
+                  <img [src]="prod.imageUrl || 'https://placehold.co/400x400/4c4180/ffffff?text=OS+Tee'"
+                       [alt]="prod.nombre"
+                       class="w-full h-60 object-cover transition-transform duration-500 group-hover:scale-110" />
+
+                  <!-- Badge Oferta -->
+                  @if (prod.nombrePromocion) {
+                    <span class="absolute top-4 right-4 bg-red-700 text-white text-xs font-bold px-3 py-1 rounded-full shadow-lg animate-pulse offer-badge">
+                      ¡OFERTA!
                     </span>
                   }
                 </div>
-                <!-- Indicador de Stock -->
-                <span class="text-xs font-medium px-2 py-0.5 rounded self-end"
-                      [ngClass]="prod.stock > 0 ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'">
-                  {{ prod.stock > 0 ? 'Stock: ' + prod.stock : 'Agotado' }}
-                </span>
-                <!-- Nombre de la promoción (opcional) -->
-                @if (prod.nombrePromocion) {
-                  <span class="text-xs text-red-600 font-medium mt-1 text-center">
-                    {{ prod.nombrePromocion }}
-                  </span>
-                }
-              </div>
 
-              <!-- Botón Añadir al Carrito -->
-              <div class="mt-3">
-                <button (click)="onAddToCart(prod.id, prod.nombre)"
+                <!-- Contenido -->
+                <div class="p-6 flex flex-col flex-1">
+                  <h2 class="text-xl font-bold text-indigo-900 truncate mb-2 group-hover:text-indigo-700 transition-colors duration-300" title="{{ prod.nombre }}">
+                    {{ prod.nombre }}
+                  </h2>
+
+                  <p class="text-sm text-gray-700 mb-4 line-clamp-3">
+                    {{ prod.descripcion || 'Sin descripción disponible.' }}
+                  </p>
+
+                  <!-- Precios y Stock -->
+                  <div class="mt-auto">
+                    <div class="flex items-baseline justify-between mb-3">
+                      <div class="flex items-baseline gap-3">
+                        <span class="text-3xl font-extrabold text-indigo-700">
+                          {{ prod.precio | currency:'S/ ' }}
+                        </span>
+
+                        @if (prod.precioOriginal && prod.precioOriginal !== prod.precio) {
+                          <span class="text-sm text-gray-400 line-through">{{ prod.precioOriginal | currency:'S/ ' }}</span>
+                        }
+                      </div>
+
+                      <span
+                        class="text-xs font-semibold px-3 py-1 rounded-full"
+                        [ngClass]="prod.stock > 0 ? 'bg-green-200 text-green-900' : 'bg-red-200 text-red-900'">
+                        {{ prod.stock > 0 ? 'Stock: ' + prod.stock : 'Agotado' }}
+                      </span>
+                    </div>
+
+                    @if (prod.nombrePromocion) {
+                      <div>
+                        <span class="text-xs text-red-700 font-semibold block">
+                          {{ prod.nombrePromocion }}
+                        </span>
+                      </div>
+                    }
+
+                    <!-- Botón Añadir -->
+                    <div class="mt-5">
+                      <button
+                        (click)="onAddToCart(prod.id, prod.nombre); $event.stopPropagation()"
                         [disabled]="!authService.isLoggedIn() || prod.stock === 0"
-                        class="w-full py-2 px-4 rounded-lg font-semibold transition duration-200 text-sm
-                               bg-indigo-600 text-white hover:bg-indigo-700
-                               disabled:bg-gray-400 disabled:cursor-not-allowed">
-                  {{ prod.stock === 0 ? 'Agotado' : 'Añadir al Carrito' }}
-                </button>
-                <!-- Mensaje si no está logueado -->
-                @if (!authService.isLoggedIn()) {
-                  <small class="text-red-600 block text-center mt-1 text-xs">
-                    Debes iniciar sesión para comprar
-                  </small>
-                }
-              </div>
-            </div>
-          </div>
-        } <!-- Fin del @for -->
-      </div>
-    } @else {
-      <!-- Mensaje si no hay productos -->
-      <div class="text-center text-gray-500 mt-12">
-        No se encontraron productos.
-      </div>
-    } <!-- Fin del @if products().length -->
-  } <!-- Fin del @if !isLoading -->
-</div>
+                        [attr.aria-disabled]="(!authService.isLoggedIn() || prod.stock === 0) ? true : null"
+                        class="w-full inline-flex items-center justify-center gap-3 py-3 rounded-xl font-semibold text-base transition duration-300
+                               bg-gradient-to-r from-indigo-600 to-indigo-400 text-white shadow-lg hover:from-indigo-700 hover:to-indigo-500
+                               focus:ring-4 focus:ring-indigo-300 disabled:opacity-60 disabled:cursor-not-allowed">
+                        <svg *ngIf="prod.stock > 0" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5"></path>
+                        </svg>
+                        {{ prod.stock === 0 ? 'Agotado' : 'Añadir al Carrito' }}
+                      </button>
 
+                      @if (!authService.isLoggedIn()) {
+                        <small class="text-red-600 block text-center mt-3 text-sm font-medium">Debes iniciar sesión para comprar</small>
+                      }
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </a>
+          } <!-- fin @for -->
+
+        </div> <!-- grid -->
+
+      } @else {
+        <div class="max-w-xl mx-auto text-center py-16">
+          <div class="mb-6">
+            <svg class="w-20 h-20 mx-auto text-gray-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M3 3h2l.4 2M7 13h10l4-8H5.4" />
+            </svg>
+          </div>
+          <h3 class="text-2xl font-semibold text-gray-800 mb-3">No se encontraron productos</h3>
+          <p class="text-gray-700 text-lg">Prueba más tarde o revisa otras categorías.</p>
+        </div>
+      }
+    }
+  </div>
+</div>

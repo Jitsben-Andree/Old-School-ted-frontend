@@ -24,54 +24,40 @@ import { AdminCategoriasComponent } from './pages/admin/admin-categorias/admin-c
 import { AdminProveedoresComponent } from './pages/admin/admin-proveedores/admin-proveedores';
 import { AdminPromocionesComponent } from './pages/admin/admin-promociones/admin-promociones';
 import { AdminAsignacionesComponent } from './pages/admin/admin-asignaciones/admin-asignaciones';
+import { ProductDetailComponent } from './pages/product-detail/product-detail';
 
 export const routes: Routes = [
-  // --- RUTAS PÚBLICAS ---
+  // Rutas Públicas
   { path: '', component: HomeComponent },
   { path: 'login', component: LoginComponent },
   { path: 'register', component: RegisterComponent },
+  { path: 'producto/:id', component: ProductDetailComponent }, 
 
-  // --- RUTAS DE CLIENTE (Protegidas por authGuard) ---
+  // Rutas Protegidas (Cliente o Admin)
   { path: 'cart', component: CartComponent, canActivate: [authGuard] },
   { path: 'checkout', component: CheckoutComponent, canActivate: [authGuard] },
   { path: 'mis-pedidos', component: MyOrdersComponent, canActivate: [authGuard] },
 
-  // --- RUTAS DE ADMINISTRADOR (Protegidas por adminGuard) ---
+  // Rutas de Administrador
   {
     path: 'admin',
     component: AdminLayoutComponent,
-    canActivate: [adminGuard], // Protege el layout principal
+    canActivate: [authGuard, adminGuard], // Proteger layout principal
     children: [
-      // Redirige /admin a /admin/products
-      { path: '', redirectTo: 'products', pathMatch: 'full' },
-      
-      // Gestión de Productos
+      { path: '', redirectTo: 'products', pathMatch: 'full' }, // Redirigir /admin a /admin/products
       { path: 'products', component: AdminProductsComponent },
-      { path: 'products/new', component: AdminProductFormComponent }, // Crear
-      { path: 'products/edit/:id', component: AdminProductFormComponent }, // Editar
-      
-      // Gestión de Inventario
+      { path: 'products/new', component: AdminProductFormComponent },
+      { path: 'products/edit/:id', component: AdminProductFormComponent },
       { path: 'inventory', component: AdminInventoryComponent },
-      
-      // Gestión de Pedidos
       { path: 'pedidos', component: AdminPedidosComponent },
-      
-      // Gestión de Categorías
       { path: 'categorias', component: AdminCategoriasComponent },
-      
-      // Gestión de Proveedores
       { path: 'proveedores', component: AdminProveedoresComponent },
-      
-      // Gestión de Promociones
       { path: 'promociones', component: AdminPromocionesComponent },
-      
-      // Gestión de Asignaciones
       { path: 'asignaciones', component: AdminAsignacionesComponent }
     ]
   },
 
-  // --- RUTA COMODÍN (Al final) ---
-  // Redirige cualquier ruta desconocida al Home
-  { path: '**', redirectTo: '' }
+  // Ruta Wildcard (Not Found) - Siempre al final
+  { path: '**', redirectTo: '' } // O a una página 404 dedicada
 ];
 

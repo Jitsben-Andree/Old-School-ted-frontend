@@ -1,42 +1,37 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
-import { CommonModule, CurrencyPipe, DecimalPipe } from '@angular/common'; // Importar Pipes
-import { RouterLink, Router } from '@angular/router'; // Importar Router y RouterLink
+import { CommonModule, CurrencyPipe, DecimalPipe } from '@angular/common';
+import { RouterLink, Router } from '@angular/router';
 import { CartService } from '../../services/cart';
 import { AuthService } from '../../services/auth';
 import { take } from 'rxjs/operators';
-// Quitar import innecesario: import { DetalleCarrito } from '../../models/carrito.model';
-import { HttpErrorResponse } from '@angular/common/http'; // Importar HttpErrorResponse
+import { DetalleCarrito } from '../../models/carrito'; // Importar DetalleCarrito
+import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
   selector: 'app-cart',
   standalone: true,
-  // Importamos CommonModule, RouterLink y los Pipes necesarios
-  imports: [CommonModule, RouterLink, CurrencyPipe],
+  imports: [CommonModule, RouterLink, CurrencyPipe, DecimalPipe],
   templateUrl: './cart.html',
   styleUrls: ['./cart.css']
 })
 export class CartComponent implements OnInit {
 
   // Inyectar servicios
-  public cartService = inject(CartService); // Público para usar en el HTML
-  public authService = inject(AuthService); // Público para usar en el HTML
+  public cartService = inject(CartService);
+  public authService = inject(AuthService);
   private router = inject(Router);
 
-  public isLoading = signal(true); // Usar signal
-  public error = signal<string | null>(null); // Usar signal
+  public isLoading = signal(true);
+  public error = signal<string | null>(null);
+  // Señal para manejar el estado de carga de la actualización de cantidad
+  public updatingQuantity = signal<number | null>(null); // Guarda el ID del item que se está actualizando
 
   ngOnInit(): void {
-    // Si el carrito no está cargado, lo cargamos
-    // Accedemos al valor del signal con cartService.cart()
     if (!this.cartService.cart() && this.authService.isLoggedIn()) {
       this.loadCart();
     } else {
       this.isLoading.set(false);
-
-      // Si está cargado pero está vacío, podría haber un error o estar limpio
       if (this.cartService.cart()?.items.length === 0) {
-        // No marcar como error, simplemente mostrar mensaje de vacío
-        // this.error.set('Tu carrito está vacío.');
         console.log('El carrito está cargado pero vacío.');
       }
     }
@@ -48,58 +43,93 @@ export class CartComponent implements OnInit {
     this.cartService.getMiCarrito().pipe(take(1)).subscribe({
       next: (cartData) => {
         this.isLoading.set(false);
-        // El signal se actualiza en el servicio, aquí solo quitamos el loading
         if (cartData?.items.length === 0) {
            console.log('Carrito cargado, pero está vacío.');
         }
       },
-      error: (err: HttpErrorResponse | Error) => { // Manejar ambos tipos de error
-        const message = err instanceof HttpErrorResponse ? err.error?.message || err.message : err.message;
-        this.error.set('Error al cargar el carrito: ' + message);
+      error: (err: Error) => { // Capturar Error genérico
+        this.error.set('Error al cargar el carrito: ' + err.message);
         this.isLoading.set(false);
         console.error('Error en getMiCarrito:', err);
-        // Si hay error (403, 404, etc.), podría ser que el carrito no existe
-        // o la sesión expiró. El signal cart quedará null.
       }
     });
   }
 
-  /**
-   * Lógica para eliminar un ítem del carrito
-   */
   onRemoveItem(detalleId: number, productName: string) {
     if (!confirm(`¿Estás seguro de que quieres eliminar "${productName}" de tu carrito?`)) {
       return;
     }
-
-    this.error.set(null); // Limpiar error
-    this.cartService.removeItem(detalleId).pipe(take(1)).subscribe({ // Usar take(1)
+    this.error.set(null);
+    // Indicar visualmente que se está eliminando (opcional)
+    // Podrías añadir una clase CSS o cambiar el estado
+    this.cartService.removeItem(detalleId).pipe(take(1)).subscribe({
       next: () => {
-        // El signal 'cart' se actualiza automáticamente gracias al tap en el servicio
         console.log(`Ítem ${detalleId} eliminado.`);
-         // Opcional: Mensaje de éxito
-         // alert(`"${productName}" eliminado del carrito.`);
       },
-      error: (err: HttpErrorResponse | Error) => { // Manejar ambos tipos de error
-        const message = err instanceof HttpErrorResponse ? err.error?.message || err.message : err.message;
-        this.error.set('Error al eliminar el producto: ' + message);
+      error: (err: Error) => {
+        this.error.set('Error al eliminar el producto: ' + err.message);
         console.error('Error en removeItem:', err);
-        alert('Error al eliminar el producto: ' + message);
+        alert('Error al eliminar el producto: ' + err.message);
       }
     });
   }
 
-  /**
-   * Navega a la página de checkout (pago)
-   */
+  // --- NUEVOS MÉTODOS PARA CANTIDAD ---
+
+  /** Aumenta la cantidad de un ítem en 1 */
+  increaseQuantity(item: DetalleCarrito): void {
+      this.updateQuantity(item, item.cantidad + 1);
+  }
+
+  /** Disminuye la cantidad de un ítem en 1 (mínimo 1) */
+  decreaseQuantity(item: DetalleCarrito): void {
+      if (item.cantidad > 1) {
+          this.updateQuantity(item, item.cantidad - 1);
+      } else {
+          // Si la cantidad es 1, preguntar si quiere eliminarlo
+          this.onRemoveItem(item.detalleCarritoId, item.productoNombre);
+      }
+  }
+
+  /** Llama al servicio para actualizar la cantidad */
+  private updateQuantity(item: DetalleCarrito, nuevaCantidad: number): void {
+      this.error.set(null); // Limpiar error
+      this.updatingQuantity.set(item.detalleCarritoId); // Marcar este item como "actualizando"
+
+      this.cartService.updateItemQuantity(item.detalleCarritoId, nuevaCantidad)
+          .pipe(take(1))
+          .subscribe({
+              next: () => {
+                  console.log(`Cantidad actualizada para item ${item.detalleCarritoId} a ${nuevaCantidad}`);
+                  this.updatingQuantity.set(null); // Quitar marca de "actualizando"
+              },
+              error: (err: Error) => {
+                  this.error.set(`Error al actualizar cantidad: ${err.message}`);
+                  console.error(`Error en updateQuantity para item ${item.detalleCarritoId}:`, err);
+                  alert(`Error al actualizar cantidad: ${err.message}`);
+                  this.updatingQuantity.set(null); // Quitar marca de "actualizando" incluso si hay error
+                  // Opcional: recargar el carrito si la actualización falla para revertir visualmente
+                  // this.loadCart();
+              }
+          });
+  }
+  // --- FIN NUEVOS MÉTODOS ---
+
+
   onCheckout() {
-    // Verificar si el carrito existe y tiene items antes de navegar
     if (this.cartService.cart() && this.cartService.cart()!.items.length > 0) {
       this.router.navigate(['/checkout']);
     } else {
       this.error.set('No puedes proceder al pago con un carrito vacío.');
-      alert('Tu carrito está vacío.'); // Añadir alerta para el usuario
+      alert('Tu carrito está vacío.');
     }
+  }
+
+   /**
+   * Función TrackBy para optimizar el *ngFor/@for
+   */
+   trackById(index: number, item: DetalleCarrito): number {
+    return item.detalleCarritoId;
   }
 }
 

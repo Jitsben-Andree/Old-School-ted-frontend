@@ -6,12 +6,12 @@ import { AuthService } from '../../services/auth'; // Importar AuthService
 import { ProductoResponse } from '../../models/producto';
 import { HttpErrorResponse } from '@angular/common/http';
 import { take } from 'rxjs';
-import { Router } from '@angular/router'; // Importar Router
+import { Router, RouterModule } from '@angular/router'; // Importar Router
 
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [CommonModule, CurrencyPipe], // Añadir CurrencyPipe
+  imports: [CommonModule, CurrencyPipe,RouterModule ], // Añadir CurrencyPipe
   templateUrl: './home.html', // Usar archivo externo
   styleUrls: ['./home.css']   // Usar archivo externo
 })

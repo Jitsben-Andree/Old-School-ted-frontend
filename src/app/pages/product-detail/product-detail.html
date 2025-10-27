@@ -1,0 +1,120 @@
+<div class="bg-gradient-to-b from-indigo-100 to-white min-h-screen py-12">
+  <div class="container mx-auto px-6 sm:px-8">
+
+    <!-- Botón Volver -->
+    <a routerLink="/" class="inline-flex items-center text-sm font-semibold text-indigo-700 hover:text-indigo-900 mb-6 transition-colors duration-300">
+      <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+      </svg>
+      Volver al Catálogo
+    </a>
+
+    <!-- Estado de Carga -->
+    @if (isLoading()) {
+      <div class="text-center py-24 animate-pulse">
+        <p class="text-2xl font-medium text-gray-600">Cargando detalles del producto...</p>
+      </div>
+    }
+
+    <!-- Estado de Error -->
+    @if (error() && !isLoading()) {
+      <div class="bg-red-50 border border-red-400 text-red-700 px-6 py-4 rounded-xl max-w-lg mx-auto text-center shadow-md animate-shake">
+        <strong class="font-semibold text-lg">Error:</strong> {{ error() }}
+      </div>
+    }
+
+    <!-- Contenido del producto -->
+    @if (product(); as prod) {
+      <div class="bg-white rounded-3xl shadow-2xl overflow-hidden lg:flex lg:space-x-12 border border-indigo-200">
+
+        <!-- Imagen con zoom al pasar el cursor -->
+        <div class="lg:w-1/2 p-6 flex justify-center items-center bg-indigo-50 rounded-l-3xl animate-fadeIn overflow-hidden">
+          <img [src]="prod.imageUrl || 'https://placehold.co/700x700/4c4180/ffffff?text=OS+Tee'"
+               [alt]="prod.nombre"
+               class="w-full max-h-[80vh] rounded-xl object-contain drop-shadow-lg transition-transform duration-500 ease-in-out hover:scale-110" />
+        </div>
+
+        <!-- Detalles -->
+        <div class="lg:w-1/2 p-8 flex flex-col justify-between animate-fadeIn delay-200">
+          <div>
+            <span class="text-xs font-semibold text-indigo-600 uppercase tracking-widest mb-1 inline-block">
+              {{ prod.categoriaNombre }}
+            </span>
+            <h1 class="text-4xl font-extrabold text-indigo-900 mb-4 drop-shadow-md">
+              {{ prod.nombre }}
+            </h1>
+            <p class="text-gray-700 text-lg leading-relaxed mb-8">
+              {{ prod.descripcion || 'Este producto no tiene descripción detallada.' }}
+            </p>
+
+            <div class="flex items-center space-x-8 mb-8">
+              <div>
+                <span class="text-sm font-medium text-gray-500 block mb-2">Talla:</span>
+                <span class="text-xl font-semibold text-gray-900 px-4 py-2 bg-indigo-100 rounded-xl shadow-inner">
+                  {{ prod.talla }}
+                </span>
+              </div>
+              <div>
+                <span class="text-sm font-medium text-gray-500 block mb-2">Disponibilidad:</span>
+                <span
+                  class="text-sm font-semibold px-3 py-1 rounded-full"
+                  [ngClass]="prod.stock > 0 ? 'bg-green-200 text-green-900 shadow-md' : 'bg-red-200 text-red-900 shadow-md'">
+                  {{ prod.stock > 0 ? prod.stock + ' en stock' : 'Agotado' }}
+                </span>
+              </div>
+            </div>
+
+            <div class="border-t pt-6 mb-6">
+              @if (prod.nombrePromocion) {
+                <span class="text-lg font-semibold text-red-700 block mb-2 animate-pulse">
+                  {{ prod.nombrePromocion }} ¡OFERTA!
+                </span>
+              }
+              <div class="flex items-baseline space-x-4">
+                <span class="text-5xl font-extrabold text-indigo-800 drop-shadow-lg">
+                  {{ prod.precio | currency:'S/ ' }}
+                </span>
+                @if (prod.precioOriginal && prod.precioOriginal !== prod.precio) {
+                  <span class="text-2xl text-gray-400 line-through">
+                    {{ prod.precioOriginal | currency:'S/ ' }}
+                  </span>
+                }
+              </div>
+            </div>
+          </div>
+
+          <!-- Sección Añadir al Carrito y selector de cantidad -->
+          <div class="mt-auto border-t pt-8 flex flex-col sm:flex-row sm:items-center gap-6">
+            @if (prod.stock > 0) {
+              <div class="flex items-center border border-indigo-300 rounded-lg overflow-hidden shadow-sm transition-shadow hover:shadow-lg">
+                <button (click)="decreaseQuantity()" [disabled]="quantityToAdd() <= 1"
+                        class="px-5 py-3 text-indigo-700 hover:bg-indigo-100 disabled:opacity-50 rounded-l-lg font-bold transition-colors duration-200">-</button>
+                <input type="number" [value]="quantityToAdd()" (change)="validateQuantity($event)"
+                       min="1" [max]="prod.stock"
+                       class="w-14 text-center border-l border-r border-indigo-300 focus:outline-none focus:ring-2 focus:ring-indigo-400 rounded-none" />
+                <button (click)="increaseQuantity()" [disabled]="quantityToAdd() >= prod.stock"
+                        class="px-5 py-3 text-indigo-700 hover:bg-indigo-100 disabled:opacity-50 rounded-r-lg font-bold transition-colors duration-200">+</button>
+              </div>
+
+              <button (click)="onAddToCart()"
+                      [disabled]="!authService.isLoggedIn()"
+                      class="flex-1 py-4 px-8 rounded-2xl font-extrabold text-white bg-gradient-to-r from-indigo-600 to-indigo-500 shadow-lg hover:from-indigo-700 hover:to-indigo-600 transition-transform duration-300 transform hover:scale-105 focus:ring-4 focus:ring-indigo-300 disabled:bg-gray-400 disabled:cursor-not-allowed">
+                Añadir al Carrito
+              </button>
+
+              @if (!authService.isLoggedIn()) {
+                <p class="text-red-600 text-sm mt-3 text-center sm:text-left">
+                  <a routerLink="/login" class="underline hover:text-red-800">Inicia sesión</a> para comprar.
+                </p>
+              }
+            } @else {
+              <p class="text-center text-red-600 font-semibold bg-red-100 py-4 rounded-xl shadow-inner animate-pulse">
+                Producto Agotado
+              </p>
+            }
+          </div>
+        </div>
+      </div>
+    }
+  </div>
+</div>
