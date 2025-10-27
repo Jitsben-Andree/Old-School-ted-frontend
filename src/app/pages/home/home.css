@@ -1,25 +1,525 @@
-.product-card {
-  transition: box-shadow 0.3s ease, transform 0.3s ease;
+/* 🖼 Fondo general detrás de todo */
+.page-background {
+  position: relative;
+  min-height: 100vh;
+  background-image: url(../../../assets/fondo.png);
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+  z-index: 0;
 }
 
-.product-card:hover {
-  box-shadow: 0 20px 30px rgba(99, 102, 241, 0.4);
-  transform: translateY(-6px);
+/* Asegura que el contenido (como el slider) esté encima */
+.page-background > * {
+  position: relative;
+  z-index: 2;
 }
 
-.offer-badge {
-  animation-name: pulseGlow;
-  animation-duration: 2.5s;
-  animation-iteration-count: infinite;
-  animation-timing-function: ease-in-out;
-  box-shadow: 0 0 8px rgba(220, 38, 38, 0.8);
+/* Efecto leve de oscuridad encima del fondo */
+.page-background::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.25);
+  z-index: 1;
 }
 
-@keyframes pulseGlow {
-  0%, 100% {
-    box-shadow: 0 0 6px rgba(220, 38, 38, 0.5);
+/* === SLIDER ESTILOS === */
+.slider {
+  width: 100%;
+  height: 80vh;
+  position: relative;
+  overflow: hidden;
+  border-radius: 12px;
+  margin: 0 auto;
+}
+
+.slides {
+  width: 500%;
+  height: 100%;
+  display: flex;
+}
+
+.slides input { display: none; }
+
+.slide {
+  width: 20%;
+  transition: 2s;
+  position: relative;
+}
+
+.slide img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.caption {
+  position: absolute;
+  bottom: 50px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0, 0, 0, 0.4);
+  color: white;
+  padding: 15px 25px;
+  border-radius: 8px;
+  font-size: 1.8rem;
+  font-weight: bold;
+}
+
+/* Posiciones del slide */
+#radio1:checked ~ .first { margin-left: 0; }
+#radio2:checked ~ .first { margin-left: -20%; }
+#radio3:checked ~ .first { margin-left: -40%; }
+#radio4:checked ~ .first { margin-left: -60%; }
+
+/* 🔘 Botones manuales (puntos) */
+.navigation-manual {
+  position: absolute;
+  width: 100%;
+  bottom: 20px;
+  display: flex;
+  justify-content: center;
+  z-index: 3;
+}
+
+.manual-btn {
+  border: 2px solid #fff;
+  padding: 5px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: 0.3s;
+  margin: 0 5px;
+}
+
+.manual-btn:hover { background: #fff; }
+
+/* Botones Adelante / Atrás */
+.prev, .next {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(0, 0, 0, 0.4);
+  color: white;
+  border: none;
+  font-size: 2rem;
+  padding: 10px 18px;
+  cursor: pointer;
+  border-radius: 50%;
+  transition: background 0.3s;
+  z-index: 3;
+}
+.prev:hover, .next:hover { background: rgba(255, 255, 255, 0.4); }
+.prev { left: 20px; }
+.next { right: 20px; }
+
+/* 🔄 Animación automática (cada 5 segundos) */
+@keyframes slideAuto {
+  0%   { margin-left: 0; }
+  20%  { margin-left: 0; }
+  25%  { margin-left: -20%; }
+  45%  { margin-left: -20%; }
+  50%  { margin-left: -40%; }
+  70%  { margin-left: -40%; }
+  75%  { margin-left: -60%; }
+  95%  { margin-left: -60%; }
+  100% { margin-left: 0; }
+}
+.slides .first { animation: slideAuto 20s infinite; }
+
+/* === SLIDE MANUAL DE PRODUCTOS === */
+.manual-slider-container {
+  position: relative;
+  width: 100%;
+  max-width: 1300px;
+  margin: 60px auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.manual-slider {
+  display: flex;
+  gap: 20px;
+  overflow: hidden;
+  scroll-behavior: smooth;
+  width: 90%;
+}
+
+.manual-item {
+  min-width: 400px;
+  text-align: center;
+  background: #fff;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+  transition: transform 0.3s ease;
+}
+.manual-item:hover { transform: scale(1.03); }
+
+.manual-item img {
+  width: 100%;
+  height: 280px;
+  object-fit: cover;
+}
+
+.manual-item p {
+  font-weight: 600;
+  color: #222;
+  margin: 12px 0;
+}
+
+/* Flechas */
+.arrow {
+  background: rgba(0, 0, 0, 0.5);
+  border: none;
+  color: white;
+  font-size: 2rem;
+  cursor: pointer;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  transition: background 0.3s;
+  z-index: 10;
+}
+.arrow:hover { background: rgba(0, 0, 0, 0.7); }
+.arrow.left  { position: absolute; left: 10px; }
+.arrow.right { position: absolute; right: 10px; }
+
+/* Responsivo carrusel manual */
+@media (max-width: 768px) {
+  .manual-item { min-width: 300px; }
+  .manual-item img { height: 220px; }
+  .arrow { width: 40px; height: 40px; font-size: 1.5rem; }
+}
+
+/* === SECCIÓN QUIÉNES SOMOS === */
+.about-section {
+  width: 100%;
+  background: linear-gradient(to right, #ffffff, #f9f9f9);
+  padding: 80px 0;
+}
+
+.about-container {
+  max-width: 1300px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 60px;
+  padding: 0 50px;
+  flex-wrap: nowrap;
+}
+
+/* Imagen a la izquierda */
+.about-image { flex: 1; text-align: center; }
+.about-image img {
+  width: 100%;
+  max-width: 500px;
+  border-radius: 20px;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+  object-fit: cover;
+}
+
+/* Texto a la derecha */
+.about-text { flex: 1; text-align: left; }
+
+.about-text h2 {
+  font-size: 2.8rem;
+  font-weight: 800;
+  color: #1b1b1b;
+  margin-bottom: 20px;
+  position: relative;
+}
+.about-text h2::after {
+  content: "";
+  position: absolute;
+  bottom: -8px;
+  left: 0;
+  width: 70px;
+  height: 4px;
+  background-color: #ff4747;
+  border-radius: 4px;
+}
+.about-text p {
+  font-size: 1.1rem;
+  color: #333;
+  line-height: 1.7;
+  margin-bottom: 18px;
+  text-align: justify;
+}
+
+/* 📱 Responsivo quiénes somos */
+@media (max-width: 992px) {
+  .about-container { flex-direction: column; text-align: center; padding: 0 20px; }
+  .about-text { text-align: center; }
+  .about-text h2::after { left: 50%; transform: translateX(-50%); }
+  .about-image img { max-width: 400px; }
+}
+
+/* =========================================================
+   ==== JUGADORES (OVERLAY) — TAMAÑO x2 Y LIMPIO ====
+   ========================================================= */
+/* Asegura que cada slide permita overlays */
+.slider .slides .slide {
+  position: relative;
+  overflow: hidden;
+}
+
+/* Contenedor del jugador (abajo-derecha) */
+.player-wrap {
+  position: absolute;
+  right: min(4vw, 32px);
+  bottom: min(3vw, 24px);
+  z-index: 3;
+  pointer-events: none; /* no bloquea clics del slide/CTA */
+}
+
+/* Imagen del jugador: tamaño duplicado */
+.player-img {
+  display: block;
+  width: auto;
+  /* Antes el menor era clamp(140px, 28vh, 320px).
+     👉 Duplicado: clamp(280px, 56vh, 640px) */
+  max-height: clamp(280px, 56vh, 640px);
+  object-fit: contain;
+  filter: drop-shadow(0 10px 30px rgba(0,0,0,.35));
+  will-change: transform;
+  transform-origin: 50% 85%;
+}
+
+/* Animación “respirar” (ligeramente más visible) */
+@keyframes gentlePulse {
+  0%   { transform: scale(1); }
+  50%  { transform: scale(1.08); } /* un poco más notorio */
+  100% { transform: scale(1); }
+}
+.pulse-zoom { animation: gentlePulse 4.5s ease-in-out infinite; }
+
+/* Desfase opcional por slide */
+.slide.first .pulse-zoom { animation-delay: .2s; }
+.slide:nth-child(2) .pulse-zoom { animation-delay: .6s; }
+.slide:nth-child(3) .pulse-zoom { animation-delay: 1s; }
+.slide:nth-child(4) .pulse-zoom { animation-delay: 1.4s; }
+
+/* Preferencias de usuario: menos movimiento */
+@media (prefers-reduced-motion: reduce) {
+  .pulse-zoom { animation: none !important; }
+}
+
+/* CTA de texto (si la usas) */
+.edge-cta {
+  position: absolute;
+  right: min(4vw, 32px);
+  top: min(3vw, 24px);
+  z-index: 4;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 10px;
+  text-align: right;
+}
+.edge-cta h3 {
+  margin: 0;
+  padding: .35rem .6rem;
+  font-size: clamp(1rem, 2.2vw, 1.4rem);
+  color: #fff;
+  background: rgba(0,0,0,.35);
+  border-radius: .5rem;
+  backdrop-filter: blur(2px);
+}
+.edge-btn {
+  display: inline-block;
+  padding: .5rem .9rem;
+  font-weight: 600;
+  text-decoration: none;
+  color: #fff;
+  background: rgba(59, 130, 246, .9);
+  border-radius: .6rem;
+  transition: transform .18s ease, opacity .18s ease;
+}
+.edge-btn:hover { transform: translateY(-1px); opacity: .95; }
+
+/* Móvil: también “doblado” frente a tu valor anterior (22vh -> 44vh) */
+@media (max-width: 640px) {
+  .player-img { max-height: 44vh; }
+  .edge-cta h3 { font-size: clamp(.95rem, 4vw, 1.1rem); }
+  .edge-btn { padding: .45rem .75rem; font-size: .9rem; }
+}
+/* === SLIDER TEXTOS Y BOTONES === */
+.slide {
+  position: relative;
+  overflow: hidden;
+}
+
+.slide img {
+  width: 100%;
+  height: 100vh;
+  object-fit: cover;
+}
+
+/* Jugador (lado derecho con animación de pulso) */
+.player-img {
+  position: absolute;
+  right: 5%;
+  bottom: 0;
+  width: 420px;
+  max-width: 30%;
+  object-fit: contain;
+  animation: floatPlayer 4s ease-in-out infinite;
+}
+
+@keyframes floatPlayer {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-12px); }
+}
+
+/* Capa de texto */
+.slide-info {
+  position: absolute;
+  top: 50%;
+  left: 8%;
+  transform: translateY(-50%);
+  color: #fff;
+  text-shadow: 0 3px 8px rgba(0, 0, 0, 0.8);
+  max-width: 40%;
+  animation: fadeInUp 1.2s ease both;
+}
+
+/* Título principal */
+.slide-title {
+  font-size: clamp(2.5rem, 6vw, 4rem);
+  font-weight: 900;
+  margin-bottom: 10px;
+  text-transform: uppercase;
+  line-height: 1.1;
+}
+
+/* Subtítulo */
+.slide-subtitle {
+  font-size: clamp(1rem, 2.5vw, 1.5rem);
+  margin-bottom: 20px;
+  color: #e2e8f0;
+  font-weight: 500;
+}
+
+/* Botón */
+.slide-btn {
+  display: inline-block;
+  background: linear-gradient(90deg, #3b82f6, #2563eb);
+  color: white;
+  padding: 12px 28px;
+  border-radius: 50px;
+  font-weight: 700;
+  text-decoration: none;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+}
+
+.slide-btn:hover {
+  background: linear-gradient(90deg, #2563eb, #1e40af);
+  transform: scale(1.05);
+  box-shadow: 0 6px 18px rgba(0,0,0,0.5);
+}
+
+/* Animación de entrada */
+@keyframes fadeInUp {
+  0% { opacity: 0; transform: translateY(30px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+/* 🔹 Contenedor principal */
+.about-section {
+  background-color: #f9fafb;
+  padding: 80px 20px;
+  position: relative;
+  overflow: hidden;
+}
+
+.about-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 50px;
+  position: relative;
+}
+
+/* 🔹 Imagen principal */
+.about-image {
+  position: relative;
+  z-index: 2; /* encima del círculo */
+}
+
+.about-image img {
+  width: 380px;
+  max-width: 100%;
+  height: auto;
+  object-fit: contain;
+}
+
+/* 🔹 Texto */
+.about-text {
+  max-width: 500px;
+  z-index: 3;
+}
+
+.about-text h2 {
+  font-size: 2.2rem;
+  font-weight: 700;
+  color: #1e3a8a;
+  margin-bottom: 15px;
+}
+
+.about-text p {
+  font-size: 1.1rem;
+  color: #333;
+  line-height: 1.6;
+}
+
+/* 🔵 Círculo animado detrás */
+.circle-background {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1;
+}
+
+.rotating-circle {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 550px; /* 🔺 tamaño del círculo */
+  height: 550px;
+  transform: translate(-50%, -50%);
+  animation: spin 12s linear infinite; /* 🔁 rotación continua */
+  opacity: 0.3; /* 🔹 transparencia suave */
+}
+
+/* 🔁 Animación */
+@keyframes spin {
+  from {
+    transform: translate(-50%, -50%) rotate(0deg);
   }
-  50% {
-    box-shadow: 0 0 12px rgba(220, 38, 38, 1);
+  to {
+    transform: translate(-50%, -50%) rotate(360deg);
+  }
+}
+
+/* 🔹 Responsive */
+@media (max-width: 768px) {
+  .about-container {
+    flex-direction: column;
+    gap: 30px;
+  }
+
+  .rotating-circle {
+    width: 300px;
+    height: 300px;
+  }
+
+  .about-image img {
+    width: 260px;
   }
 }

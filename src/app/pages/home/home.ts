@@ -1,49 +1,107 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
-import { CommonModule, CurrencyPipe } from '@angular/common'; // Importar CurrencyPipe
+// home.ts
+import { Component, OnInit, AfterViewInit, OnDestroy, inject, signal, Renderer2 } from '@angular/core';
+import { CommonModule, CurrencyPipe } from '@angular/common';
+import { Router, RouterModule } from '@angular/router';
+import { take } from 'rxjs';
+
 import { ProductService } from '../../services/product';
 import { CartService } from '../../services/cart';
-import { AuthService } from '../../services/auth'; // Importar AuthService
+import { AuthService } from '../../services/auth';
 import { ProductoResponse } from '../../models/producto';
 import { HttpErrorResponse } from '@angular/common/http';
-import { take } from 'rxjs';
-import { Router, RouterModule } from '@angular/router'; // Importar Router
 
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [CommonModule, CurrencyPipe,RouterModule ], // Añadir CurrencyPipe
-  templateUrl: './home.html', // Usar archivo externo
-  styleUrls: ['./home.css']   // Usar archivo externo
+  imports: [CommonModule, CurrencyPipe, RouterModule],
+  templateUrl: './home.html',
+  styleUrls: ['./home.css']
 })
-export class HomeComponent implements OnInit {
-  // Inyectar servicios (hacer authService público)
+export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
   private productService = inject(ProductService);
-  private cartService = inject(CartService);
-  public authService = inject(AuthService); // Hacer público para usar en HTML
-  private router = inject(Router); // Inyectar Router
+  private cartService    = inject(CartService);
+  public  authService    = inject(AuthService);
+  private router         = inject(Router);
+  private renderer       = inject(Renderer2);
 
-  // Usar signals para estado
   public products = signal<ProductoResponse[]>([]);
   public isLoading = signal(true);
   public error = signal<string | null>(null);
+
+  private unlisteners: Array<() => void> = [];
 
   ngOnInit(): void {
     this.loadProducts();
   }
 
-  /**
-   * Carga los productos activos desde el servicio.
-   */
+  // === Carrusel manual con bucle infinito ===
+  ngAfterViewInit(): void {
+    const slider = document.getElementById('manualSlider'); // contenedor
+    const next   = document.getElementById('nextManual');
+    const prev   = document.getElementById('prevManual');
+
+    if (!slider || !next || !prev) return;
+
+    const getStep = () => {
+      const firstCard = slider.querySelector<HTMLElement>('.manual-item');
+      const style = getComputedStyle(slider);
+      const gap = parseInt(style.gap || '20', 10);
+      const width = firstCard ? firstCard.getBoundingClientRect().width : 420;
+      return width + gap;
+    };
+
+    const scrollRight = () => {
+      const step = getStep();
+      const maxScroll = slider.scrollWidth - slider.clientWidth;
+
+      // Si está al final → vuelve al inicio
+      if (slider.scrollLeft + step >= maxScroll) {
+        slider.scrollTo({ left: 0, behavior: 'smooth' });
+      } else {
+        slider.scrollBy({ left: step, behavior: 'smooth' });
+      }
+    };
+
+    const scrollLeft = () => {
+      const step = getStep();
+
+      // Si está al inicio → va al final
+      if (slider.scrollLeft - step <= 0) {
+        slider.scrollTo({ left: slider.scrollWidth, behavior: 'smooth' });
+      } else {
+        slider.scrollBy({ left: -step, behavior: 'smooth' });
+      }
+    };
+
+    this.unlisteners.push(this.renderer.listen(next, 'click', scrollRight));
+    this.unlisteners.push(this.renderer.listen(prev, 'click', scrollLeft));
+
+    // Opcional: navegación con teclado
+    this.unlisteners.push(
+      this.renderer.listen(slider, 'keydown', (e: KeyboardEvent) => {
+        if (e.key === 'ArrowRight') scrollRight();
+        if (e.key === 'ArrowLeft') scrollLeft();
+      })
+    );
+  }
+
+  ngOnDestroy(): void {
+    this.unlisteners.forEach(off => { try { off(); } catch {} });
+    this.unlisteners = [];
+  }
+
+  // === Tu lógica original ===
   loadProducts(): void {
     this.isLoading.set(true);
     this.error.set(null);
+
     this.productService.getAllProductosActivos().pipe(take(1)).subscribe({
       next: (data) => {
-        this.products.set(data);
+        this.products.set(data ?? []);
         this.isLoading.set(false);
       },
-      error: (err: HttpErrorResponse | Error) => { // Manejar ambos tipos de error
-        const message = err instanceof HttpErrorResponse ? err.error?.message || err.message : err.message;
+      error: (err: HttpErrorResponse | Error) => {
+        const message = err instanceof HttpErrorResponse ? (err.error?.message || err.message) : err.message;
         this.error.set('Error al cargar productos: ' + message);
         this.isLoading.set(false);
         console.error('Error en getAllProductosActivos:', err);
@@ -51,49 +109,24 @@ export class HomeComponent implements OnInit {
     });
   }
 
-  /**
-   * Lógica para añadir un producto al carrito.
-   * Verifica si el usuario está logueado antes de añadir.
-   */
   onAddToCart(productId: number, productName: string): void {
-    // Verificar si el usuario está logueado
     if (!this.authService.isLoggedIn()) {
       alert('Debes iniciar sesión para añadir productos al carrito.');
-      this.router.navigate(['/login']); // Redirigir al login
+      this.router.navigate(['/login']);
       return;
     }
 
-    const cantidad = 1; // Añadir siempre 1 unidad desde el catálogo
-    console.log(`Intentando añadir Producto ID: ${productId}, Cantidad: ${cantidad}`);
-
-    // Limpiar errores anteriores
+    const cantidad = 1;
     this.error.set(null);
 
     this.cartService.addItem(productId, cantidad).pipe(take(1)).subscribe({
-      next: (cartResponse) => {
-        console.log('Producto añadido al carrito:', cartResponse);
+      next: () => {
         alert(`¡"${productName}" añadido al carrito!`);
-        // Opcional: Mostrar un mensaje de éxito más elegante (snackbar/toast)
       },
       error: (err: HttpErrorResponse | Error) => {
-        console.error('Error al añadir al carrito:', err);
-        // Intentar obtener el mensaje de error específico del backend si está disponible
-        const backendErrorMessage = err instanceof HttpErrorResponse ? err.error?.message || err.message : err.message;
-        const displayMessage = backendErrorMessage || 'Ocurrió un error inesperado.';
-        // Actualizar señal de error para mostrar en el componente si es necesario
-        // this.error.set(`Error al añadir "${productName}": ${displayMessage}`);
-        // Mostrar alerta al usuario
-        alert(`Error al añadir "${productName}": ${displayMessage}`);
+        const backendErrorMessage = err instanceof HttpErrorResponse ? (err.error?.message || err.message) : err.message;
+        alert(`Error al añadir "${productName}": ${backendErrorMessage || 'Ocurrió un error inesperado.'}`);
       }
     });
   }
-
-  /**
-   * Función TrackBy para optimizar el bucle *ngFor/@for en el HTML.
-   * Ayuda a Angular a identificar qué elementos han cambiado.
-   */
-  trackById(index: number, item: ProductoResponse): number {
-    return item.id; // Asume que cada producto tiene un 'id' único
-  }
 }
-

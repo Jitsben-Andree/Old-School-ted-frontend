@@ -1,0 +1,83 @@
+<footer class="footer">
+  <div class="footer__inner">
+
+    <!-- Fila superior: Logo + Suscripción -->
+    <div class="footer__top">
+      <div class="footer__brand">
+        <!-- Pon tu logo -->
+        <img src="assets/Logo.png" alt="OldSchoolTed" class="footer__logo" />
+      </div>
+
+      <div class="footer__subscribe">
+        <p class="footer__subscribe-title">Inscríbete y obtén 20% OFF en tu primera compra</p>
+        <form class="subscribe-form" (submit)="onSubscribe(emailInput.value); $event.preventDefault()">
+          <input #emailInput type="email" required placeholder="CORREO ELECTRÓNICO" class="subscribe-input" />
+          <button type="submit" class="subscribe-btn" aria-label="Suscribirse">
+            <span class="arrow">→</span>
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <hr class="footer__divider" />
+
+    <!-- Fila media: listas de enlaces + redes -->
+    <div class="footer__grid">
+      <div class="footer__col">
+        <h3 class="footer__title">Ayuda</h3>
+        <ul class="footer__list">
+          <li *ngFor="let link of helpLinks">
+            <a [href]="link.url" class="footer__link">{{ link.label }}</a>
+          </li>
+        </ul>
+      </div>
+
+      <div class="footer__col">
+        <h3 class="footer__title">Acerca de OldSchoolTed</h3>
+        <ul class="footer__list">
+          <li *ngFor="let link of aboutLinks">
+            <a [href]="link.url" class="footer__link">{{ link.label }}</a>
+          </li>
+        </ul>
+
+        <!-- Pequeño icono + texto (Libro de reclamaciones) -->
+        <div class="footer__book">
+          <span class="book-emoji" aria-hidden="true">📖</span>
+          <a href="/libro" class="footer__link">Libro de reclamaciones</a>
+        </div>
+      </div>
+
+      <div class="footer__col">
+        <p class="footer__subtitle">Más inspiración</p>
+        <div class="socials">
+          <a href="https://facebook.com" target="_blank" rel="noopener" aria-label="Facebook" class="socials__btn">
+            <!-- Facebook SVG -->
+            <svg viewBox="0 0 24 24" class="socials__icon" aria-hidden="true">
+              <path d="M22 12a10 10 0 1 0-11.5 9.9v-7h-2v-3h2v-2.3c0-2 1.2-3.1 3-3.1.9 0 1.8.1 1.8.1v2h-1c-1 0-1.3.6-1.3 1.2V12h2.2l-.3 3h-1.9v7A10 10 0 0 0 22 12z"/>
+            </svg>
+          </a>
+          <a href="https://twitter.com" target="_blank" rel="noopener" aria-label="X" class="socials__btn">
+            <!-- X/Twitter SVG -->
+            <svg viewBox="0 0 24 24" class="socials__icon" aria-hidden="true">
+              <path d="M4 4h3.5l4.3 6 4.6-6H20l-6.6 8.6L20 20h-3.5l-4.5-6L7.3 20H4l6.7-8.9L4 4z"/>
+            </svg>
+          </a>
+          <a href="https://instagram.com" target="_blank" rel="noopener" aria-label="Instagram" class="socials__btn">
+            <!-- Instagram SVG -->
+            <svg viewBox="0 0 24 24" class="socials__icon" aria-hidden="true">
+              <path d="M7 2h10a5 5 0 0 1 5 5v10a5 5 0 0 1-5 5H7a5 5 0 0 1-5-5V7a5 5 0 0 1 5-5zm0 2a3 3 0 0 0-3 3v10a3 3 0 0 0 3 3h10a3 3 0 0 0 3-3V7a3 3 0 0 0-3-3H7zm5 3.5A5.5 5.5 0 1 1 6.5 13 5.5 5.5 0 0 1 12 7.5zm0 2A3.5 3.5 0 1 0 15.5 13 3.5 3.5 0 0 0 12 9.5zm6-3a1 1 0 1 1-1 1 1 1 0 0 1 1-1z"/>
+            </svg>
+          </a>
+        </div>
+
+        <!-- Botón/badge final -->
+        
+      </div>
+    </div>
+
+    <!-- Fila inferior: copyright -->
+    <div class="footer__bottom">
+      <p>© {{year}} OldSchoolTed. Todos los derechos reservados.</p>
+    </div>
+  </div>
+</footer>

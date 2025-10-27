@@ -12,7 +12,7 @@ import { CartService } from '../../services/cart';
   templateUrl: './navbar.html',
   styleUrls: ['./navbar.css']
 })
-export class NavbarComponent {
+export class Navbar {
 
   // Inyecta los servicios
   public authService = inject(AuthService);

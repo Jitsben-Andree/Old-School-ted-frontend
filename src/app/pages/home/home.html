@@ -1,137 +1,149 @@
-<!-- catalogo.component.html -->
-<div class="min-h-screen bg-gradient-to-b from-indigo-100 via-white to-indigo-50 py-12">
-  <div class="container mx-auto px-6 sm:px-8 lg:px-10">
-    <h1 class="text-5xl font-extrabold mb-10 text-center text-indigo-900 drop-shadow-lg">Catálogo de Camisetas Retro</h1>
+<!-- 🧭 SECCIÓN 1: SLIDER PRINCIPAL -->
+<section id="inicio" class="page-background">
+  <div class="slider">
+    <div class="slides">
+      <!-- Radio buttons ocultos -->
+      <input type="radio" name="radio-btn" id="radio1" checked>
+      <input type="radio" name="radio-btn" id="radio2">
+      <input type="radio" name="radio-btn" id="radio3">
+      <input type="radio" name="radio-btn" id="radio4">
 
-    <!-- Estados: Loading -->
-    @if (isLoading()) {
-      <div class="space-y-5 max-w-5xl mx-auto">
-        <div class="rounded-3xl bg-white/70 backdrop-blur-md border border-white/50 p-8 animate-pulse shadow-xl">
-          <div class="h-7 w-1/2 bg-white/60 rounded mb-6"></div>
-          <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-6">
-            <div class="h-56 rounded-xl bg-white/60"></div>
-            <div class="h-56 rounded-xl bg-white/60"></div>
-            <div class="h-56 rounded-xl bg-white/60"></div>
-            <div class="h-56 rounded-xl bg-white/60"></div>
-          </div>
-        </div>
-      </div>
-    }
-
-    <!-- Estado: Error -->
-    @if (error() && !isLoading()) {
-      <div class="max-w-3xl mx-auto mb-8">
-        <div class="bg-red-50 border border-red-300 text-red-700 px-5 py-4 rounded-xl shadow-lg flex items-center space-x-3">
-          <strong class="font-semibold text-lg">Error:</strong>
-          <span class="text-base">{{ error() }}</span>
-        </div>
-      </div>
-    }
-
-    <!-- Contenedor de Productos -->
-    @if (!isLoading() && !error()) {
-      @if (products().length > 0) {
-
-        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8 lg:gap-10">
-
-          <!-- Loop de Productos -->
-          @for (prod of products(); track prod.id) {
-            <a [routerLink]="['/producto', prod.id]"
-               class="group transform transition duration-300 hover:scale-105 focus:outline-none shadow-lg rounded-3xl"
-               aria-label="Ver producto {{ prod.nombre }}">
-
-              <!-- Tarjeta (glassmorphism con efecto hover) -->
-              <div class="h-full flex flex-col rounded-3xl bg-white/70 backdrop-blur-md border border-white/40 shadow-lg overflow-hidden product-card">
-                <!-- Imagen -->
-                <div class="relative overflow-hidden rounded-t-3xl">
-                  <img [src]="prod.imageUrl || 'https://placehold.co/400x400/4c4180/ffffff?text=OS+Tee'"
-                       [alt]="prod.nombre"
-                       class="w-full h-60 object-cover transition-transform duration-500 group-hover:scale-110" />
-
-                  <!-- Badge Oferta -->
-                  @if (prod.nombrePromocion) {
-                    <span class="absolute top-4 right-4 bg-red-700 text-white text-xs font-bold px-3 py-1 rounded-full shadow-lg animate-pulse offer-badge">
-                      ¡OFERTA!
-                    </span>
-                  }
-                </div>
-
-                <!-- Contenido -->
-                <div class="p-6 flex flex-col flex-1">
-                  <h2 class="text-xl font-bold text-indigo-900 truncate mb-2 group-hover:text-indigo-700 transition-colors duration-300" title="{{ prod.nombre }}">
-                    {{ prod.nombre }}
-                  </h2>
-
-                  <p class="text-sm text-gray-700 mb-4 line-clamp-3">
-                    {{ prod.descripcion || 'Sin descripción disponible.' }}
-                  </p>
-
-                  <!-- Precios y Stock -->
-                  <div class="mt-auto">
-                    <div class="flex items-baseline justify-between mb-3">
-                      <div class="flex items-baseline gap-3">
-                        <span class="text-3xl font-extrabold text-indigo-700">
-                          {{ prod.precio | currency:'S/ ' }}
-                        </span>
-
-                        @if (prod.precioOriginal && prod.precioOriginal !== prod.precio) {
-                          <span class="text-sm text-gray-400 line-through">{{ prod.precioOriginal | currency:'S/ ' }}</span>
-                        }
-                      </div>
-
-                      <span
-                        class="text-xs font-semibold px-3 py-1 rounded-full"
-                        [ngClass]="prod.stock > 0 ? 'bg-green-200 text-green-900' : 'bg-red-200 text-red-900'">
-                        {{ prod.stock > 0 ? 'Stock: ' + prod.stock : 'Agotado' }}
-                      </span>
-                    </div>
-
-                    @if (prod.nombrePromocion) {
-                      <div>
-                        <span class="text-xs text-red-700 font-semibold block">
-                          {{ prod.nombrePromocion }}
-                        </span>
-                      </div>
-                    }
-
-                    <!-- Botón Añadir -->
-                    <div class="mt-5">
-                      <button
-                        (click)="onAddToCart(prod.id, prod.nombre); $event.stopPropagation()"
-                        [disabled]="!authService.isLoggedIn() || prod.stock === 0"
-                        [attr.aria-disabled]="(!authService.isLoggedIn() || prod.stock === 0) ? true : null"
-                        class="w-full inline-flex items-center justify-center gap-3 py-3 rounded-xl font-semibold text-base transition duration-300
-                               bg-gradient-to-r from-indigo-600 to-indigo-400 text-white shadow-lg hover:from-indigo-700 hover:to-indigo-500
-                               focus:ring-4 focus:ring-indigo-300 disabled:opacity-60 disabled:cursor-not-allowed">
-                        <svg *ngIf="prod.stock > 0" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5"></path>
-                        </svg>
-                        {{ prod.stock === 0 ? 'Agotado' : 'Añadir al Carrito' }}
-                      </button>
-
-                      @if (!authService.isLoggedIn()) {
-                        <small class="text-red-600 block text-center mt-3 text-sm font-medium">Debes iniciar sesión para comprar</small>
-                      }
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </a>
-          } <!-- fin @for -->
-
-        </div> <!-- grid -->
-
-      } @else {
-        <div class="max-w-xl mx-auto text-center py-16">
-          <div class="mb-6">
-            <svg class="w-20 h-20 mx-auto text-gray-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M3 3h2l.4 2M7 13h10l4-8H5.4" />
-            </svg>
-          </div>
-          <h3 class="text-2xl font-semibold text-gray-800 mb-3">No se encontraron productos</h3>
-          <p class="text-gray-700 text-lg">Prueba más tarde o revisa otras categorías.</p>
-        </div>
-      }
-    }
+      <!-- 🔹 SLIDE 1 → lleva a QUIÉNES SOMOS -->
+      <!-- 🔹 SLIDE 1 – Quiénes somos -->
+<div class="slide first">
+  <img src="assets/slide/fondo1.jpg" alt="Fondo 1">
+  
+  <!-- Capa de texto -->
+  <div class="slide-info">
+    <h1 class="slide-title">Colección Retro Clásica</h1>
+    <p class="slide-subtitle">Donde el pasado cobra vida</p>
+    <a href="#about" class="slide-btn">Conócenos</a>
   </div>
+
+  <!-- Jugador -->
+  <img src="assets/slide/jugadores/r10.png" alt="R10" class="player-img pulse-zoom">
 </div>
+
+<!-- 🔹 SLIDE 2 – Colecciones -->
+<div class="slide">
+  <img src="assets/slide/fondo2.jpg" alt="Fondo 2">
+  <div class="slide-info">
+    <h1 class="slide-title">Historia y Estilo</h1>
+    <p class="slide-subtitle">Explora nuestras colecciones legendarias</p>
+    <a href="#colecciones" class="slide-btn">Ver Colecciones</a>
+  </div>
+  <img src="assets/slide/jugadores/CB.png" alt="CB" class="player-img pulse-zoom">
+</div>
+
+<!-- 🔹 SLIDE 3 – Catálogo -->
+<div class="slide">
+  <img src="assets/slide/fondo1.jpg" alt="Fondo 3">
+  <div class="slide-info">
+    <h1 class="slide-title">Pasión por el Fútbol</h1>
+    <p class="slide-subtitle">Los clásicos que marcaron una era</p>
+    <a href="#catalogo" class="slide-btn">Ver Catálogo</a>
+  </div>
+  <img src="assets/slide/jugadores/CR7 .png" alt="CR7" class="player-img pulse-zoom">
+</div>
+
+<!-- 🔹 SLIDE 4 – Inicio -->
+<div class="slide">
+  <img src="assets/slide/fondo2.jpg" alt="Fondo 4">
+  <div class="slide-info">
+    <h1 class="slide-title">Revive la Época Dorada</h1>
+    <p class="slide-subtitle">El legado de las leyendas continúa</p>
+    <a href="#inicio" class="slide-btn">Volver al Inicio</a>
+  </div>
+  <img src="assets/slide/jugadores/Messi.png" alt="Messi" class="player-img pulse-zoom">
+</div>
+
+
+      <!-- Navegación automática -->
+      <div class="navigation-auto">
+        <div class="auto-btn1"></div>
+        <div class="auto-btn2"></div>
+        <div class="auto-btn3"></div>
+        <div class="auto-btn4"></div>
+      </div>
+    </div>
+
+    <!-- Navegación manual -->
+     <div class="navigation-manual">
+      <label for="radio1" class="manual-btn"></label>
+      <label for="radio2" class="manual-btn"></label>
+      <label for="radio3" class="manual-btn"></label>
+      <label for="radio4" class="manual-btn"></label>
+    </div>
+
+    <!-- 🔹 Flechas -->
+    <button class="prev" onclick="moveSlide(-1)">❮</button>
+    <button class="next" onclick="moveSlide(1)">❯</button>
+  </div>
+</section>
+
+<!-- 🧍‍♂️ SECCIÓN 2: QUIÉNES SOMOS -->
+<section id="about" class="about-section">
+  <div class="about-container">
+
+    <!-- 🔵 Círculo animado detrás -->
+    <div class="circle-background">
+      <img src="src/assets/slide/circulo/circuloplomo1.png" alt="Círculo girando" class="rotating-circle">
+    </div>
+
+    <!-- Imagen principal -->
+    <div class="about-image">
+      <img src="assets/somos.png" alt="Equipo OldSchoolTed">
+    </div>
+
+    <!-- Texto -->
+    <div class="about-text">
+      <h2>¿Quiénes Somos?</h2>
+      <p>
+        En <strong>OldSchoolTed</strong> celebramos la esencia del estilo retro,
+        trayendo de vuelta las camisetas clásicas que marcaron historia en el fútbol,
+        el cine y la cultura urbana.
+      </p>
+      <p>
+        Cada prenda refleja dedicación, nostalgia y calidad.
+        Desde Perú, trabajamos para conectar generaciones a través del diseño y la historia.
+        <strong>OldSchoolTed</strong>: el pasado nunca se vio tan bien.
+      </p>
+    </div>
+  </div>
+</section>
+
+
+<!-- 🧢 SECCIÓN 3: COLECCIONES -->
+<section id="colecciones" class="manual-slider-section">
+  <h2 class="section-title">Colecciones Destacadas</h2>
+  <div class="manual-slider-container">
+    <button class="arrow left" id="prevManual">❮</button>
+    <div class="manual-slider" id="manualSlider">
+      <div class="manual-item">
+        <img src="assets/colecciones/tortugas-ninja.jpg" alt="PUMA x TORTUGAS NINJA">
+        <p>PUMA x TORTUGAS NINJA</p>
+      </div>
+      <div class="manual-item">
+        <img src="assets/colecciones/harry-potter.jpg" alt="PUMA x HARRY POTTER">
+        <p>PUMA x HARRY POTTER</p>
+      </div>
+      <div class="manual-item">
+        <img src="assets/colecciones/squid-game.jpg" alt="PUMA x SQUID GAME">
+        <p>PUMA x SQUID GAME</p>
+      </div>
+      <div class="manual-item">
+        <img src="assets/colecciones/ferrari.jpg" alt="PUMA x FERRARI">
+        <p>PUMA x FERRARI</p>
+      </div>
+    </div>
+    <button class="arrow right" id="nextManual">❯</button>
+  </div>
+</section>
+
+<!-- 🛒 SECCIÓN 4: CATÁLOGO -->
+<section id="catalogo" class="catalogo-section">
+  <h2 class="section-title">Catálogo General</h2>
+  <div class="catalogo-container">
+    <p class="text-center text-gray-700">Próximamente nuestros productos destacados...</p>
+  </div>
+</section>
