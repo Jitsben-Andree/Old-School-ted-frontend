@@ -73,10 +73,19 @@ export class LoginComponent implements AfterViewInit {
         this.isSubmitting = false;
         this.router.navigate(['/']); // Home
       },
-      error: (err) => {
+      error: (err: Error) => { // Tipado como Error
         this.isSubmitting = false;
-        this.errorMessage = err.message || 'Error desconocido. Intente de nuevo.';
-        console.error(err);
+        
+        // --- LÓGICA DE ERROR MODIFICADA ---
+        console.error("Error en login:", err.message);
+        
+        if (err.message.includes('CUENTA_BLOQUEADA') || err.message.includes('Tu cuenta está bloqueada')) {
+          // Mensaje actualizado: Ya no mencionamos que se envió un código.
+          this.errorMessage = 'Tu cuenta ha sido bloqueada por seguridad.';
+        } else {
+          // Para "Credenciales incorrectas" o cualquier otro error
+          this.errorMessage = err.message || 'Error desconocido. Intente de nuevo.';
+        }
       }
     });
   }

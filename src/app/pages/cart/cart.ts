@@ -10,7 +10,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 @Component({
   selector: 'app-cart',
   standalone: true,
-  imports: [CommonModule, RouterLink, CurrencyPipe, DecimalPipe],
+  imports: [CommonModule, RouterLink, CurrencyPipe],
   templateUrl: './cart.html',
   styleUrls: ['./cart.css']
 })

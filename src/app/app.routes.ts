@@ -25,6 +25,7 @@ import { AdminProveedoresComponent } from './pages/admin/admin-proveedores/admin
 import { AdminPromocionesComponent } from './pages/admin/admin-promociones/admin-promociones';
 import { AdminAsignacionesComponent } from './pages/admin/admin-asignaciones/admin-asignaciones';
 import { ProductDetailComponent } from './pages/product-detail/product-detail';
+import { UnlockAccountComponent } from './pages/unlock/unlock';
 
 export const routes: Routes = [
   // Rutas Públicas
@@ -32,6 +33,7 @@ export const routes: Routes = [
   { path: 'login', component: LoginComponent },
   { path: 'register', component: RegisterComponent },
   { path: 'producto/:id', component: ProductDetailComponent }, 
+  { path: 'unlock', component: UnlockAccountComponent },
 
   // Rutas Protegidas (Cliente o Admin)
   { path: 'cart', component: CartComponent, canActivate: [authGuard] },
