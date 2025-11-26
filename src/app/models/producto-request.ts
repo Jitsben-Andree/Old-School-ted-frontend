@@ -1,9 +1,17 @@
-// Este modelo coincide con tu DTO de Spring Boot
 export interface ProductoRequest {
-  nombre: string;
-  descripcion: string;
-  talla: string; // "S", "M", "L", "XL"
-  precio: number;
-  activo: boolean;
-  categoriaId: number;
+    nombre: string;
+    descripcion: string;
+    talla: string;
+    precio: number;
+    activo: boolean;
+    categoriaId: number;
+    
+    // --- ASEGÚRATE DE TENER ESTOS CAMPOS ---
+    colorDorsal?: string;
+    leyendas?: LeyendaDto[];
+}
+
+export interface LeyendaDto {
+    nombre: string;
+    numero: string;
 }

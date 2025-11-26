@@ -18,7 +18,18 @@ export interface Carrito {
 
 // Basado en tu DTO AddItemRequest.java
 export interface AddItemRequest {
-  productoId: number;
-  cantidad: number;
+    productoId: number;
+    cantidad: number;
+    
+    // --- NUEVOS CAMPOS OPCIONALES ---
+    personalizacion?: {
+        tipo: string;   
+        nombre: string; 
+        numero: string; 
+        precio: number; 
+    };
+    parche?: {
+        tipo: string;   
+        precio: number; 
+    };
 }
-

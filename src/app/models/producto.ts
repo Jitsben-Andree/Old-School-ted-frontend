@@ -7,24 +7,27 @@ export interface PromocionSimple {
   activa: boolean;
 }
 
-// Interfaz principal del producto (coincide con ProductoResponse)
 export interface ProductoResponse {
-  id: number;
-  nombre: string;
-  descripcion: string;
-  talla: string;
-  precio: number; // Precio final (con descuento si aplica)
-  activo: boolean;
-  categoriaNombre: string;
-  stock: number;
-  imageUrl?: string;
+    id: number;
+    nombre: string;
+    descripcion: string;
+    talla: string;
+    precio: number;
+    activo: boolean;
+    categoriaNombre: string;
+    stock: number;
+    
+    // Imágenes
+    imageUrl: string; 
+    galeriaImagenes: { id: number, url: string }[];
 
-  // --- Campos de Promoción ---
-  precioOriginal?: number;
-  descuentoAplicado?: number;
-  nombrePromocion?: string;
+    // --- NUEVOS CAMPOS (Corrección del error) ---
+    colorDorsal?: string;
+    leyendas?: { id: number, nombre: string, numero: string }[];
+    // -------------------------------------------
 
-  // --- Lista de Promociones Asociadas ---
-  promocionesAsociadas?: PromocionSimple[]; // Puede ser undefined si no hay
+    precioOriginal?: number;
+    descuentoAplicado?: number;
+    nombrePromocion?: string;
+    promocionesAsociadas?: any[];
 }
-
