@@ -1,20 +1,30 @@
-import { Component, OnInit, AfterViewInit, OnDestroy, inject, signal, Renderer2 } from '@angular/core';
-import { CommonModule, CurrencyPipe } from '@angular/common'; // <<< AÑADIDO CurrencyPipe
-import { Router, RouterModule, RouterLink } from '@angular/router'; // <<< AÑADIDO RouterLink
+declare const window: any;
+import {
+  Component,
+  OnInit,
+  AfterViewInit,
+  OnDestroy,
+  inject,
+  signal,
+  Renderer2
+} from '@angular/core';
+import { CommonModule, CurrencyPipe } from '@angular/common';
+import { Router, RouterModule, RouterLink } from '@angular/router';
 import { take } from 'rxjs';
 
 import { ProductService } from '../../services/product';
 import { CartService } from '../../services/cart';
 import { AuthService } from '../../services/auth';
-import { ProductoResponse } from '../../models/producto'; 
-import { HttpErrorResponse } from '@angular/common/http';
+import { ProductoResponse } from '../../models/producto';
+
+import { HttpErrorResponse, HttpClient } from '@angular/common/http';
 
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [CommonModule, CurrencyPipe, RouterModule, RouterLink], 
+  imports: [CommonModule, CurrencyPipe, RouterModule, RouterLink],
   templateUrl: './home.html',
-  styleUrls: ['./home.css'] 
+  styleUrls: ['./home.css']
 })
 export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
   private productService = inject(ProductService);
@@ -22,24 +32,40 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
   public  authService    = inject(AuthService);
   private router         = inject(Router);
   private renderer       = inject(Renderer2);
+  private http           = inject(HttpClient);   // para la API de noticias
 
-  public products = signal<ProductoResponse[]>([]);
+  // 🛒 Productos
+  public products  = signal<ProductoResponse[]>([]);
   public isLoading = signal(true);
-  public error = signal<string | null>(null);
+  public error     = signal<string | null>(null);
+
+  // 📰 Noticias deportivas
+  public sportsNews    = signal<any[]>([]);
+  public isLoadingNews = signal(false);
+  public errorNews     = signal<string | null>(null);
+
+  // API key de GNews
+  private readonly NEWS_API_KEY = 'ca325d41820a402faa286be90c30662d';
 
   private unlisteners: Array<() => void> = [];
-
+private botpressLoaded = false;
   ngOnInit(): void {
     this.loadProducts();
+    // this.loadSportsNews();  // si luego activas noticias
+this.showBotpress();
+    // 👇 mostrar chatbot SOLO cuando estoy en Home
+    
   }
 
   // === Lógica para tus Sliders ===
   ngAfterViewInit(): void {
-    // 1. Lógica para el Slider de CSS (Sección 1)
+
+    
+    // 1. Slider principal (radios)
     this.setupAutoSlider();
     this.setupManualArrows();
 
-    // 2. Lógica para el Slider de Colecciones (Sección 3)
+    // 2. Slider manual de colecciones
     const slider = document.getElementById('manualSlider'); // contenedor
     const next   = document.getElementById('nextManual');
     const prev   = document.getElementById('prevManual');
@@ -58,7 +84,6 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
     const scrollRight = () => {
       const step = getStep();
       const maxScroll = slider.scrollWidth - slider.clientWidth;
-      // Añadir un pequeño buffer para el cálculo del final
       if (slider.scrollLeft + step >= maxScroll - step) {
         slider.scrollTo({ left: 0, behavior: 'smooth' });
       } else {
@@ -81,7 +106,7 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
     this.unlisteners.push(
       this.renderer.listen(slider, 'keydown', (e: KeyboardEvent) => {
         if (e.key === 'ArrowRight') scrollRight();
-        if (e.key === 'ArrowLeft') scrollLeft();
+        if (e.key === 'ArrowLeft')  scrollLeft();
       })
     );
   }
@@ -90,40 +115,78 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
     // Limpiar todos los listeners
     this.unlisteners.forEach(off => { try { off(); } catch {} });
     this.unlisteners = [];
+
+    // 👇 ocultar chatbot cuando salgo del Home
+    this.hideBotpress();
   }
 
-  // --- Helpers para el slider de CSS (Sección 1) ---
+ private showBotpress(): void {
+    const w = window as any;
+    // Botpress tiene una función 'show' que controla la visibilidad de su widget
+    if (w.botpressWebChat && typeof w.botpressWebChat.show === 'function') {
+      w.botpressWebChat.show();
+    } else {
+      // Si el chat tarda en cargar, intenta mostrarlo un poco más tarde
+      setTimeout(() => {
+        if (w.botpressWebChat && typeof w.botpressWebChat.show === 'function') {
+           w.botpressWebChat.show();
+        }
+      }, 500);
+    }
+  }
+
+  private hideBotpress(): void {
+    const w = window as any;
+    // Botpress tiene una función 'hide' para ocultar el widget
+    if (w.botpressWebChat && typeof w.botpressWebChat.hide === 'function') {
+      w.botpressWebChat.hide();
+    }
+  }
+
+
+  public toggleBot(): void {
+  const w = window as any;
+
+  if (w.botpressWebChat?.open) {
+    w.botpressWebChat.open();
+  } else {
+    console.warn('Botpress todavía se está cargando...');
+  }
+}
+
+
+ 
+
+  // --- Slider automático (Sección 1) ---
   setupAutoSlider(): void {
     let counter = 1;
     const intervalId = setInterval(() => {
-        const radio = document.getElementById('radio' + counter) as HTMLInputElement;
-        if (radio) radio.checked = true;
-        counter++;
-        if (counter > 4) counter = 1;
+      const radio = document.getElementById('radio' + counter) as HTMLInputElement;
+      if (radio) radio.checked = true;
+      counter++;
+      if (counter > 4) counter = 1;
     }, 5000); // Cambia cada 5 segundos
 
     this.unlisteners.push(() => clearInterval(intervalId)); // Limpiar al destruir
   }
 
   setupManualArrows(): void {
-     // Esta función se asigna al 'window' para que "onclick=" en el HTML funcione
-     // No es la mejor práctica de Angular, pero es necesario para ese HTML
-     (window as any).moveSlide = (n: number) => {
-        const radios = document.querySelectorAll<HTMLInputElement>('input[name="radio-btn"]');
-        let currentIdx = 0;
-        radios.forEach((radio, idx) => {
-            if(radio.checked) currentIdx = idx;
-        });
-        
-        let nextIdx = (currentIdx + n) % radios.length;
-        if (nextIdx < 0) nextIdx = radios.length - 1; // Manejar -1
+    (window as any).moveSlide = (n: number) => {
+      const radios = document.querySelectorAll<HTMLInputElement>('input[name="radio-btn"]');
+      let currentIdx = 0;
+      radios.forEach((radio, idx) => {
+        if (radio.checked) currentIdx = idx;
+      });
 
-        const nextRadio = radios[nextIdx];
-        if (nextRadio) nextRadio.checked = true;
-     };
+      let nextIdx = (currentIdx + n) % radios.length;
+      if (nextIdx < 0) nextIdx = radios.length - 1;
+
+      const nextRadio = radios[nextIdx];
+      if (nextRadio) nextRadio.checked = true;
+    };
   }
 
-  // === Lógica del Catálogo de Productos ===
+  // === Catálogo de Productos ===
   loadProducts(): void {
     this.isLoading.set(true);
     this.error.set(null);
@@ -134,7 +197,11 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
         this.isLoading.set(false);
       },
       error: (err: HttpErrorResponse | Error) => {
-        const message = err instanceof HttpErrorResponse ? (err.error?.message || err.message) : err.message;
+        const message =
+          err instanceof HttpErrorResponse
+            ? (err.error?.message || err.message)
+            : err.message;
+
         this.error.set('Error al cargar productos: ' + message);
         this.isLoading.set(false);
         console.error('Error en getAllProductosActivos:', err);
@@ -155,20 +222,24 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
     this.cartService.addItem(productId, cantidad).pipe(take(1)).subscribe({
       next: (cartResponse) => {
         console.log('Producto añadido al carrito:', cartResponse);
-        alert(`¡"${productName}" añadido al carrito!`);
+        alert(`"${productName}" añadido al carrito!`);
       },
       error: (err: HttpErrorResponse | Error) => {
-        const backendErrorMessage = err instanceof HttpErrorResponse ? (err.error?.message || err.message) : err.message;
-        alert(`Error al añadir "${productName}": ${backendErrorMessage || 'Ocurrió un error inesperado.'}`);
+        const backendErrorMessage =
+          err instanceof HttpErrorResponse
+            ? (err.error?.message || err.message)
+            : err.message;
+
+        alert(
+          `Error al añadir "${productName}": ${
+            backendErrorMessage || 'Ocurrió un error inesperado.'
+          }`
+        );
       }
     });
   }
 
-  /**
-   * Función TrackBy para optimizar el @for del catálogo
-   */
   trackById(index: number, item: ProductoResponse): number {
     return item.id;
   }
 }
-

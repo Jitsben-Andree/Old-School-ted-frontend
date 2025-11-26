@@ -57,7 +57,7 @@ export class MyOrdersComponent implements OnInit {
     }
   }
 
-  // ✅ única versión de isStepActive
+  // única versión de isStepActive
   isStepActive(estadoEnvio: string | null | undefined, step: number): boolean {
     const e = (estadoEnvio || '').toUpperCase(); // ej: EN_PREPARACION
 

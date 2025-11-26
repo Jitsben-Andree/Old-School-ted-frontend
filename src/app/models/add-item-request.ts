@@ -2,7 +2,7 @@ export interface AddItemRequest {
     productoId: number;
     cantidad: number;
     
-    // --- NUEVOS CAMPOS OPCIONALES ---
+   
     personalizacion?: {
         tipo: string;   // 'Leyenda' o 'Custom'
         nombre: string; // Ej: "MESSI"

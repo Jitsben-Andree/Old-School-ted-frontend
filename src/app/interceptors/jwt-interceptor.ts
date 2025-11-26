@@ -2,12 +2,9 @@ import { HttpInterceptorFn } from '@angular/common/http';
 import { inject } from '@angular/core';
 import { AuthService } from '../services/auth';
 
-/**
- * Interceptor funcional (moderno) para adjuntar el token JWT.
- */
+
 export const jwtInterceptor: HttpInterceptorFn = (req, next) => {
   
-  // Inyectamos el AuthService
   const authService = inject(AuthService);
   
   // Obtenemos el token desde el signal del servicio de autenticación

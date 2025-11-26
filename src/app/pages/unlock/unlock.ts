@@ -10,7 +10,6 @@ import { UnlockRequest } from '../../models/UnlockRequest';
   standalone: true,
   imports: [CommonModule, FormsModule, RouterLink],
   templateUrl: './unlock.html',
-  // Asegúrate de que el CSS esté siendo referenciado aquí
   styleUrls: ['./unlock.css'] 
 })
 export class UnlockAccountComponent implements OnInit, AfterViewInit {
@@ -39,9 +38,7 @@ export class UnlockAccountComponent implements OnInit, AfterViewInit {
     this.route.queryParams.subscribe(params => {
       if (params['email']) {
         this.unlockData.email = params['email'];
-        // Opcional: Si ya viene el email, podríamos saltar al paso 2
-        // o llamar a handleStep1Submit() automáticamente.
-        // Por ahora, solo lo prellenamos.
+        
       }
     });
   }
@@ -81,9 +78,6 @@ export class UnlockAccountComponent implements OnInit, AfterViewInit {
     playVideo();
   }
 
-  /**
-   * PASO 1: Valida el form, llama al servicio para enviar el código.
-   */
   handleStep1Submit(form: NgForm): void {
     if (form.invalid) {
       form.control.markAllAsTouched();
@@ -98,7 +92,7 @@ export class UnlockAccountComponent implements OnInit, AfterViewInit {
       next: (response) => {
         this.isSubmitting = false;
         this.successMessage = response.message || `Código enviado a ${this.unlockData.email}`;
-        this.step = 2; // Avanzar al siguiente paso
+        this.step = 2; 
       },
       error: (err: Error) => {
         this.isSubmitting = false;
@@ -107,9 +101,7 @@ export class UnlockAccountComponent implements OnInit, AfterViewInit {
     });
   }
 
-  /**
-   * PASO 2: Valida el form, llama al servicio para desbloquear/resetear.
-   */
+
   handleStep2Submit(form: NgForm): void {
     if (form.invalid) {
       form.control.markAllAsTouched();
@@ -146,13 +138,9 @@ export class UnlockAccountComponent implements OnInit, AfterViewInit {
     });
   }
 
-  /**
-   * Botón "Volver a intentar / Reenviar" en Paso 2.
-   * Simplemente vuelve a ejecutar la lógica del paso 1.
-   */
+
   resendCode(): void {
-    // No necesitamos validar un formulario aquí, solo reenviar.
-    this.isSubmitting = true; // Mostramos el loader
+    this.isSubmitting = true;
     this.errorMessage = null;
     this.successMessage = null;
 

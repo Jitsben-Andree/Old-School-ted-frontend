@@ -6,7 +6,6 @@ export interface ProductoRequest {
     activo: boolean;
     categoriaId: number;
     
-    // --- ASEGÚRATE DE TENER ESTOS CAMPOS ---
     colorDorsal?: string;
     leyendas?: LeyendaDto[];
 }

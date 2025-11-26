@@ -32,10 +32,7 @@ export class AuthService {
     this.currentUser()?.roles?.includes('Administrador') ?? false
   );
 
-  /**
-   * (Cliente) Registra un nuevo usuario.
-   * Llama a: POST /api/v1/auth/register
-   */
+
   public register(request: RegisterRequest): Observable<AuthResponse> {
     return this.http.post<AuthResponse>(`${this.API_URL}/register`, request).pipe(
       tap(response => this.saveAuthData(response)),
@@ -43,10 +40,7 @@ export class AuthService {
     );
   }
 
-  /**
-   * (Cliente) Inicia sesión.
-   * Llama a: POST /api/v1/auth/login
-   */
+
   public login(request: LoginRequest): Observable<AuthResponse> {
     return this.http.post<AuthResponse>(`${this.API_URL}/login`, request).pipe(
       tap(response => this.saveAuthData(response)),
@@ -54,9 +48,7 @@ export class AuthService {
     );
   }
 
-  /**
-   * (Cliente) Cierra la sesión.
-   */
+
   public logout(): void {
     localStorage.removeItem('token');
     localStorage.removeItem('user');
@@ -64,29 +56,19 @@ export class AuthService {
     this.currentUser.set(null);
   }
 
-  /**
-   * (NUEVO) PASO 1: Solicita un código de reseteo o reenvía uno.
-   * Llama a: POST /api/v1/auth/request-reset
-   */
+
   public requestResetCode(email: string): Observable<{ message: string }> {
     return this.http.post<{ message: string }>(`${this.API_URL}/request-reset`, { email }).pipe(
       catchError(this.handleError)
     );
   }
 
-  /**
-   * (NUEVO) PASO 2: Desbloquea la cuenta o resetea la contraseña.
-   * Llama a: POST /api/v1/auth/unlock
-   */
   public unlockAccount(request: UnlockRequest): Observable<{ message: string }> {
     return this.http.post<{ message: string }>(`${this.API_URL}/unlock`, request).pipe(
       catchError(this.handleError)
     );
   }
 
-  /**
-   * Helper privado para guardar el token y la info del usuario.
-   */
   private saveAuthData(response: AuthResponse): void {
     localStorage.setItem('token', response.token);
     localStorage.setItem('user', JSON.stringify(response));

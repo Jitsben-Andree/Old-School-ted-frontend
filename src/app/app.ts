@@ -6,7 +6,6 @@ import { FooterComponent } from "./components/footer/footer"; // 2. Importar Nav
 @Component({
   selector: 'app-root',
   standalone: true,
-  // 3. Añadirlos a los 'imports'
   imports: [RouterOutlet, NavbarComponent, FooterComponent], 
   templateUrl: './app.html',
   styleUrls: ['./app.css']

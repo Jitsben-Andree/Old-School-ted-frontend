@@ -30,23 +30,23 @@ export class ProductDetailComponent implements OnInit {
   public isLoading = signal(true);
   public error = signal<string | null>(null);
   
-  // Estado de UI (Galería)
+  // Estado de UI 
   public activeImageIndex = signal(0);
 
-  // Estado UI (Interacción)
+  // Estado UI 
   public quantityToAdd = signal(1);
   public showSizeChart = signal(false);
   public isWishlisted = signal(false);
   public toastMessage = signal<{text: string, type: 'success' | 'error'} | null>(null);
 
-  // --- ESTADOS PARA PERSONALIZACIÓN ---
+  
   
   // Acordeones
   public activeAccordion = signal<string | null>('description'); 
 
   // Personalización
   public personalizationMode = signal<'player' | 'custom' | null>(null); 
-  public selectedPlayer: string = ''; // Guardará "10 - MESSI" para parsearlo
+  public selectedPlayer: string = ''; 
   public customName: string = '';
   public customNumber: string = '';
   
@@ -108,7 +108,7 @@ export class ProductDetailComponent implements OnInit {
     });
   }
 
-  // --- Métodos UI ---
+ 
 
   setActiveImage(index: number): void {
     this.activeImageIndex.set(index);
@@ -150,7 +150,7 @@ export class ProductDetailComponent implements OnInit {
     // --- RECOPILACIÓN DE DATOS DE PERSONALIZACIÓN ---
     let personalizacionData: { tipo: string, numero: string, nombre: string, precio: number } | null = null;
 
-    // Caso 1: Leyenda Seleccionada ("10 - MESSI")
+    //  Leyenda Seleccionada ("10 - MESSI")
     if (this.personalizationMode() === 'player' && this.selectedPlayer) {
       const parts = this.selectedPlayer.split('-'); // Separamos por el guión
       if (parts.length >= 2) {
@@ -162,7 +162,7 @@ export class ProductDetailComponent implements OnInit {
         };
       }
     } 
-    // Caso 2: Nombre Personalizado
+    //  Nombre Personalizado
     else if (this.personalizationMode() === 'custom') {
       if (this.customName || this.customNumber) {
         personalizacionData = {
@@ -177,7 +177,7 @@ export class ProductDetailComponent implements OnInit {
     // Parches
     const parcheSeleccionado = this.selectedPatch() ? { tipo: this.selectedPatch()!, precio: 73.00 } : null;
 
-    // --- ENVIAR AL CARRITO ---
+    // enviaar a carrito
     this.cartService.addItem(currentProduct.id, this.quantityToAdd(), personalizacionData, parcheSeleccionado)
       .pipe(take(1))
       .subscribe({
@@ -193,7 +193,7 @@ export class ProductDetailComponent implements OnInit {
       });
   }
 
-  // --- Helpers ---
+  
   toggleWishlist(): void {
     this.isWishlisted.update(v => !v);
     this.showToast(this.isWishlisted() ? 'Añadido a favoritos' : 'Eliminado de favoritos', 'success');

@@ -39,7 +39,7 @@ export class CheckoutComponent implements OnInit {
     { value: 'TRANSFERENCIA', display: 'Transferencia Bancaria', icon: '🏦' }
   ];
 
-  // --- NUEVO: Información simulada para métodos de pago ---
+  // Información simulada para métodos de pago ---
   public yapeInfo = {
     numero: '987 654 321',
     qrUrl: 'https://placehold.co/150x150/FFEC44/000000?text=Scan+Yape+QR' // URL placeholder para QR
@@ -54,7 +54,7 @@ export class CheckoutComponent implements OnInit {
   };
   // Para PayPal, normalmente redirigirías o usarías su SDK.
   // Para Tarjeta, necesitarías campos adicionales en el form y validación (no lo haremos completo por seguridad).
-  // --- FIN NUEVO ---
+ 
 
 
   constructor() {
@@ -69,7 +69,7 @@ export class CheckoutComponent implements OnInit {
       // --- Fin Opcional ---
     });
 
-    // --- NUEVO: Habilitar/Deshabilitar campos de tarjeta según método ---
+    //  Habilitar/Deshabilitar campos de tarjeta según método ---
     this.checkoutForm.get('metodoPagoInfo')?.valueChanges.subscribe(metodo => {
       const tarjetaControls = ['numeroTarjeta', 'fechaExpiracion', 'cvc'];
       if (metodo === 'TARJETA') {
@@ -95,7 +95,7 @@ export class CheckoutComponent implements OnInit {
            this.checkoutForm.get(controlName)?.clearValidators();
         });
      }
-    // --- FIN NUEVO ---
+    
   }
 
   ngOnInit(): void {
@@ -109,7 +109,7 @@ export class CheckoutComponent implements OnInit {
     }
   }
 
-  loadCart() { /* ... (sin cambios) ... */
+  loadCart() {
      this.isLoading.set(true);
      this.cartService.getMiCarrito().pipe(take(1)).subscribe({
       next: (loadedCart) => {
@@ -128,12 +128,12 @@ export class CheckoutComponent implements OnInit {
     });
    }
 
-  handleEmptyCart() { /* ... (sin cambios) ... */
+  handleEmptyCart() { 
      console.warn("Carrito vacío o error al cargar, redirigiendo...");
      this.router.navigate(['/cart']);
    }
 
-  onSubmit() { /* ... (lógica de simulación y llamada al backend sin cambios) ... */
+  onSubmit() { 
     if (this.checkoutForm.invalid || !this.cart()) {
       this.checkoutForm.markAllAsTouched();
       if (!this.cart()) {
@@ -153,7 +153,7 @@ export class CheckoutComponent implements OnInit {
     }, 2000);
    }
 
-  crearPedidoEnBackend() { /* ... (sin cambios) ... */
+  crearPedidoEnBackend() { 
     this.isLoading.set(true);
     const request: PedidoRequest = {
         direccionEnvio: this.checkoutForm.value.direccionEnvio,

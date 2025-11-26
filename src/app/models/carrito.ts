@@ -3,8 +3,8 @@ export interface DetalleCarrito { // Cambiar nombre a DetalleCarrito
       productoId: number;
       productoNombre: string;
       cantidad: number;
-      precioUnitario: number; // Precio con descuento si aplica
-      subtotal: number;       // Subtotal con descuento
+      precioUnitario: number; 
+      subtotal: number;      
       imageUrl?: string;
       stockActual?: number;      
     }
@@ -16,12 +16,10 @@ export interface Carrito {
   total: number;
 }
 
-// Basado en tu DTO AddItemRequest.java
 export interface AddItemRequest {
     productoId: number;
     cantidad: number;
     
-    // --- NUEVOS CAMPOS OPCIONALES ---
     personalizacion?: {
         tipo: string;   
         nombre: string; 

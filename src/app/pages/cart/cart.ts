@@ -4,7 +4,7 @@ import { RouterLink, Router } from '@angular/router';
 import { CartService } from '../../services/cart';
 import { AuthService } from '../../services/auth';
 import { take } from 'rxjs/operators';
-import { DetalleCarrito } from '../../models/carrito'; // Importar DetalleCarrito
+import { DetalleCarrito } from '../../models/carrito'; 
 import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
@@ -74,7 +74,7 @@ export class CartComponent implements OnInit {
     });
   }
 
-  // --- NUEVOS MÉTODOS PARA CANTIDAD ---
+ 
 
   /** Aumenta la cantidad de un ítem en 1 */
   increaseQuantity(item: DetalleCarrito): void {
@@ -113,7 +113,7 @@ export class CartComponent implements OnInit {
               }
           });
   }
-  // --- FIN NUEVOS MÉTODOS ---
+ 
 
 
   onCheckout() {

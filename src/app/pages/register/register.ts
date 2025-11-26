@@ -11,7 +11,7 @@ import { RegisterRequest } from '../../models/register-request';
   standalone: true,
   imports: [CommonModule, FormsModule, RouterLink],
   templateUrl: './register.html',
-  styleUrls: ['./register.css'] // Puedes reutilizar login.css si quieres
+  styleUrls: ['./register.css']
 })
 export class RegisterComponent implements AfterViewInit {
   private authService = inject(AuthService);
@@ -22,7 +22,7 @@ export class RegisterComponent implements AfterViewInit {
   public errorMessage: string | null = null;
   public isSubmitting = false;
 
-  // La lógica del video es idéntica a la del login
+  
   ngAfterViewInit(): void {
     const video = this.bgVideo?.nativeElement;
     if (!video) return;
@@ -64,7 +64,7 @@ export class RegisterComponent implements AfterViewInit {
 
     const { password, confirmPassword } = form.value;
 
-    // 1. Validación de contraseñas
+   
     if (password !== confirmPassword) {
       this.errorMessage = 'Las contraseñas no coinciden.';
       return;
@@ -73,19 +73,18 @@ export class RegisterComponent implements AfterViewInit {
     this.errorMessage = null;
     this.isSubmitting = true;
     
-    // 2. Creamos el objeto sin incluir 'confirmPassword'
+  
     const request: RegisterRequest = {
       nombre: form.value.name,
       email: form.value.email,
       password: form.value.password
     };
 
-    // 3. Llamamos al servicio (asumiendo que tienes un método 'register')
+
     this.authService.register(request).subscribe({
       next: () => {
         this.isSubmitting = false;
         // Éxito: Redirigimos al login
-        // Opcional: puedes pasar un queryParam para mostrar un mensaje de éxito en el login
         this.router.navigate(['/login'], { queryParams: { registered: 'true' } });
       },
       error: (err) => {

@@ -11,8 +11,8 @@ import { AuthService } from './auth'; // Importar AuthService
 export class AsignacionService {
 
   private http = inject(HttpClient);
-  private authService = inject(AuthService); // Inyectar AuthService
-  private API_URL = 'http://localhost:8080/api/v1/asignaciones'; // URL base correcta
+  private authService = inject(AuthService);
+  private API_URL = 'http://localhost:8080/api/v1/asignaciones'; 
 
   // --- Helper para crear cabeceras ---
   private createAuthHeaders(): HttpHeaders {
@@ -76,19 +76,15 @@ export class AsignacionService {
   // --- Manejador de Errores Específico para Admin ---
   private handleAdminError(error: HttpErrorResponse): Observable<never> {
     console.error("AsignacionService Error (Admin):", error);
-    // Devolver el mensaje de error del backend si está disponible, o uno genérico
-    // Asegurarse de acceder al mensaje de error correctamente
+    
     const errorBody = error.error; // El cuerpo de la respuesta de error
     let message = 'Ocurrió un error en la operación de asignación.'; // Mensaje por defecto
 
     if (errorBody && typeof errorBody === 'string') {
-        // A veces Spring devuelve un string simple en el error
         message = errorBody;
     } else if (errorBody && errorBody.message) {
-        // Si Spring devuelve un JSON con una propiedad 'message'
         message = errorBody.message;
     } else if (error.message) {
-         // Mensaje genérico del HttpErrorResponse
          message = error.message;
     }
 
