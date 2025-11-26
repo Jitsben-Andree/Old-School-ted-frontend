@@ -72,6 +72,53 @@
               </span>
             </div>
           </div>
+                    <!-- 🔵 Línea de tiempo simple -->
+          <div class="px-4 pb-4">
+            <h3 class="text-sm font-semibold text-gray-700 mb-3">
+              Seguimiento del pedido
+            </h3>
+
+            <div class="flex items-center justify-between gap-2">
+
+              <!-- Paso 1 -->
+              <div class="flex flex-col items-center flex-1">
+                <div [ngClass]="getStepClasses(pedido.estadoEnvio, 1)">
+                  1
+                </div>
+                <span class="text-xs font-semibold text-gray-700 mt-1">
+                  Registrado
+                </span>
+              </div>
+
+              <!-- Línea entre pasos -->
+              <div class="h-0.5 flex-1 bg-gray-200"></div>
+
+              <!-- Paso 2 -->
+              <div class="flex flex-col items-center flex-1">
+                <div [ngClass]="getStepClasses(pedido.estadoEnvio, 2)">
+                  2
+                </div>
+                <span class="text-xs font-semibold text-gray-700 mt-1">
+                  En preparación
+                </span>
+              </div>
+
+              <!-- Línea entre pasos -->
+              <div class="h-0.5 flex-1 bg-gray-200"></div>
+
+              <!-- Paso 3 -->
+              <div class="flex flex-col items-center flex-1">
+                <div [ngClass]="getStepClasses(pedido.estadoEnvio, 3)">
+                  3
+                </div>
+                <span class="text-xs font-semibold text-gray-700 mt-1 text-center">
+                  Listo para recoger
+                </span>
+              </div>
+
+            </div>
+          </div>
+
 
           <!-- (Opcional) Resumen de productos en el pedido -->
           <div class="p-4 border-t border-gray-100">
