@@ -4,8 +4,8 @@
     linear-gradient(
       rgba(160, 160, 173, 0.85),   /* tono plomo oscuro arriba */
       rgba(36, 36, 39, 0.85)    /* mismo tono abajo */
-    ),
-    url('../../../assets/FondosBuenos/Fondito2.png');  /* o Fondito2 */
+    );
+     /* o Fondito2 */
   background-size: cover;
   background-repeat: no-repeat;
   background-position: center;

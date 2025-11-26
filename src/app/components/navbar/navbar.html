@@ -6,24 +6,24 @@
 
       <!-- SECCIÓN IZQUIERDA: LOGO BRANDING -->
       <div class="flex-shrink-0 flex items-center gap-6">
-        <a routerLink="/" (click)="closeMobileMenu()" class="group flex items-center gap-3 cursor-pointer">
-          <!-- Escudo / Logo -->
-          <img src="assets/logo.jpg" 
-               alt="OST" 
-               class="h-10 w-10 object-contain filter drop-shadow-lg rounded-md"
-               onerror="this.style.display='none'">
-          
-          <!-- Texto "Official Store" -->
-          <div class="flex flex-col justify-center leading-none">
-            <span class="text-xl font-black text-white tracking-tighter uppercase group-hover:text-gray-300 transition-colors">
-              OldSchool
-            </span>
-            <span class="text-[0.65rem] text-gray-400 font-normal tracking-wide uppercase mt-0.5">
-              Official Store
-            </span>
-          </div>
-        </a>
-      </div>
+  <a routerLink="/" (click)="closeMobileMenu()" class="group flex items-center gap-3 cursor-pointer">
+
+    <img src="assets/logo.png"
+         alt="OST"
+         class="h-10 w-10 object-contain filter drop-shadow-lg rounded-md">
+
+    <div class="flex flex-col justify-center leading-none">
+      <span class="text-xl font-black text-white tracking-tighter uppercase group-hover:text-gray-300 transition-colors">
+        OldSchoolTed
+      </span>
+      <span class="text-[0.65rem] text-gray-400 font-normal tracking-wide uppercase mt-0.5">
+        Official Store
+      </span>
+    </div>
+
+  </a>
+</div>
+
 
       <!-- SECCIÓN CENTRAL: MENÚ DE NAVEGACIÓN -->
       <div class="hidden lg:flex items-center space-x-10">
