@@ -44,9 +44,9 @@ export const routes: Routes = [
   {
     path: 'admin',
     component: AdminLayoutComponent,
-    canActivate: [authGuard, adminGuard], // Proteger layout principal
+    canActivate: [authGuard, adminGuard], 
     children: [
-      { path: '', redirectTo: 'products', pathMatch: 'full' }, // Redirigir /admin a /admin/products
+      { path: '', redirectTo: 'products', pathMatch: 'full' }, 
       { path: 'products', component: AdminProductsComponent },
       { path: 'products/new', component: AdminProductFormComponent },
       { path: 'products/edit/:id', component: AdminProductFormComponent },

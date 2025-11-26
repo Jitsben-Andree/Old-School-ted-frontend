@@ -2,9 +2,7 @@ import { inject } from '@angular/core';
 import { CanActivateFn, Router } from '@angular/router';
 import { AuthService } from '../services/auth';
 
-/**
- * Guard funcional (moderno) para proteger rutas.
- */
+
 export const authGuard: CanActivateFn = (route, state) => {
   
   // Inyectamos los servicios necesarios
