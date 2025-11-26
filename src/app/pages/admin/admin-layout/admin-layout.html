@@ -1,174 +1,112 @@
-<div class="flex h-screen bg-gray-100 font-sans">
-  <!-- Barra Lateral de Navegación -->
-  <aside class="w-64 bg-gray-900 text-gray-200 flex-shrink-0">
-    <div class="p-6">
-      <h2 class="text-2xl font-semibold text-white">Admin Panel</h2>
-      <span class="text-sm text-gray-400">OldSchool Tees</span>
+<!-- Contenedor Principal: Se ajusta a la altura restante de la pantalla -->
+<div class="flex min-h-[calc(100vh-5rem)] bg-gray-50 font-sans">
+
+  <!-- 🟢 SIDEBAR (Barra Lateral) -->
+  <aside class="w-64 bg-[#151528] text-gray-300 flex-shrink-0 flex flex-col shadow-xl z-10 transition-all duration-300">
+    
+    <!-- Encabezado del Sidebar -->
+    <div class="px-6 py-8 border-b border-gray-800">
+      <h2 class="text-lg font-black text-white tracking-wider uppercase flex items-center gap-2">
+        <span class="text-[#F7CE46]">///</span> Admin
+      </h2>
+      <p class="text-[10px] font-bold text-gray-500 uppercase tracking-[0.2em] mt-1">Gestión de Tienda</p>
     </div>
 
-    <nav class="mt-6">
-      <!-- 
-        Usamos routerLink para la navegación y routerLinkActive para el estilo 'active'
-        que definimos en el CSS.
-      -->
+    <!-- Navegación con Scroll -->
+    <nav class="flex-1 px-3 py-6 space-y-1 overflow-y-auto custom-scrollbar">
+      
+      <!-- SECCIÓN: PRINCIPAL -->
+      <p class="px-3 text-[10px] font-bold text-gray-600 uppercase tracking-widest mb-2 mt-2">Principal</p>
 
-      <a routerLink="products" routerLinkActive="active" class="nav-link">
-        <svg
-          class="w-5 h-5 mr-3"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M5 7h14"
-          ></path>
-        </svg>
-        Productos
+      <a routerLink="products" routerLinkActive="active-nav-link" class="nav-link group">
+        <div class="icon-container group-hover:text-[#F7CE46]">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path></svg>
+        </div>
+        <span class="font-medium text-sm tracking-wide">Productos</span>
       </a>
 
-      <a routerLink="inventory" routerLinkActive="active" class="nav-link">
-        <svg
-          class="w-5 h-5 mr-3"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            d="M4 7v10m16-10v10M4 17h16M4 17a2 2 0 01-2-2V9a2 2 0 012-2h16a2 2 0 012 2v6a2 2 0 01-2 2M4 17h16m-9-4v4"
-          ></path>
-        </svg>
-        Inventario
+      <a routerLink="inventory" routerLinkActive="active-nav-link" class="nav-link group">
+        <div class="icon-container group-hover:text-[#F7CE46]">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002-2h2a2 2 0 002 2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path></svg>
+        </div>
+        <span class="font-medium text-sm tracking-wide">Inventario</span>
       </a>
 
-      <a routerLink="pedidos" routerLinkActive="active" class="nav-link">
-        <svg
-          class="w-5 h-5 mr-3"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002-2h2a2 2 0 002 2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"
-          ></path>
-        </svg>
-        Pedidos
+      <a routerLink="pedidos" routerLinkActive="active-nav-link" class="nav-link group">
+        <div class="icon-container group-hover:text-[#F7CE46]">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+        </div>
+        <div class="flex justify-between w-full items-center">
+           <span class="font-medium text-sm tracking-wide">Pedidos</span>
+           <!-- Badge opcional -->
+           <!-- <span class="bg-[#F7CE46] text-black text-[9px] font-bold px-1.5 py-0.5 rounded">3</span> -->
+        </div>
       </a>
 
-      <a routerLink="categorias" routerLinkActive="active" class="nav-link">
-        <svg
-          class="w-5 h-5 mr-3"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M5 7h14"
-          ></path>
-        </svg>
-        Categorías
+      <!-- SECCIÓN: CATÁLOGO -->
+      <div class="my-6 border-t border-gray-800 mx-3"></div>
+      <div class="px-4 mb-2">
+        <span class="text-[10px] font-extrabold text-gray-600 uppercase tracking-widest">Configuración</span>
+      </div>
+
+      <a routerLink="categorias" routerLinkActive="active-nav-link" class="nav-link group">
+        <div class="icon-container group-hover:text-[#F7CE46]">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path></svg>
+        </div>
+        <span class="font-medium text-sm tracking-wide">Categorías</span>
       </a>
 
-      <a routerLink="proveedores" routerLinkActive="active" class="nav-link">
-        <svg
-          class="w-5 h-5 mr-3"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            d="M8 14v3m4-3v3m4-3v3M3 21h18M3 10h18M3 7l9-4 9 4M4 10h16v11H4V10z"
-          ></path>
-        </svg>
-        Proveedores
+      <a routerLink="promociones" routerLinkActive="active-nav-link" class="nav-link group">
+        <div class="icon-container group-hover:text-[#F7CE46]">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v13m0-13V6a2 2 0 112 2h-2zm0 0V5.5A2.5 2.5 0 109.5 8H12zm-7 4h14M5 12a2 2 0 110-4h14a2 2 0 110 4M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7"></path></svg>
+        </div>
+        <span class="font-medium text-sm tracking-wide">Promociones</span>
       </a>
 
-      <a routerLink="promociones" routerLinkActive="active" class="nav-link">
-        <svg
-          class="w-5 h-5 mr-3"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z"
-          ></path>
-        </svg>
-        Promociones
+      <a routerLink="proveedores" routerLinkActive="active-nav-link" class="nav-link group">
+        <div class="icon-container group-hover:text-[#F7CE46]">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
+        </div>
+        <span class="font-medium text-sm tracking-wide">Proveedores</span>
       </a>
 
-      <a routerLink="asignaciones" routerLinkActive="active" class="nav-link">
-        <svg
-          class="w-5 h-5 mr-3"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            d="M13 10V3L4 14h7v7l9-11h-7z"
-          ></path>
-        </svg>
-        Asignaciones
-      </a>
-
-      <a
-        routerLink="/"
-        class="nav-link text-gray-400 hover:bg-gray-700 hover:text-white mt-8 border-t border-gray-700"
-      >
-        <svg
-          class="w-5 h-5 mr-3"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"
-          ></path>
-        </svg>
-        Volver a la Tienda
+      <a routerLink="asignaciones" routerLinkActive="active-nav-link" class="nav-link group">
+        <div class="icon-container group-hover:text-[#F7CE46]">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path></svg>
+        </div>
+        <span class="font-medium text-sm tracking-wide">Asignaciones</span>
       </a>
     </nav>
+
+    <!-- Footer del Sidebar -->
+    <div class="p-4 border-t border-gray-800 bg-[#0f0f1d]">
+      <a routerLink="/" class="flex items-center justify-center w-full py-2.5 mb-2 text-xs font-bold text-gray-400 bg-[#1f1f33] rounded-lg hover:bg-[#F7CE46] hover:text-black transition-all uppercase tracking-wider group">
+         <span class="group-hover:scale-105 transition-transform">Volver a Tienda</span>
+      </a>
+    </div>
   </aside>
 
-  <!-- Área de Contenido Principal -->
-  <main class="flex-1 overflow-x-hidden overflow-y-auto bg-gray-100">
-    <div class="container mx-auto px-6 py-8">
-      <!-- 
-        ¡AQUÍ ES DONDE SE RENDERIZAN LAS PÁGINAS DE ADMIN!
-        (AdminProductsComponent, AdminInventoryComponent, etc.)
-      -->
-      <router-outlet></router-outlet>
+  <!-- 🔵 ÁREA DE CONTENIDO PRINCIPAL -->
+  <main class="flex-1 overflow-x-hidden overflow-y-auto bg-[#f3f4f6] relative">
+    <!-- Decoración sutil de fondo (header simulado) -->
+    <div class="h-20 bg-white border-b border-gray-200 w-full z-0 absolute top-0 left-0"></div>
+
+    <div class="container mx-auto px-6 py-8 relative z-10">
+      
+      <!-- Espacio para título o breadcrumbs -->
+      <div class="h-12 mb-4 flex items-center text-gray-500 text-xs uppercase font-bold tracking-widest">
+         <span>Dashboard</span> <span class="mx-2">/</span> <span class="text-[#151528]">Vista General</span>
+      </div>
+
+      <!-- Aquí se renderizan tus componentes (Tablas, Formularios, etc.) -->
+      <div class="animate-fade-in-up">
+         <router-outlet></router-outlet>
+      </div>
+
+      <div class="mt-8 text-center">
+         <p class="text-[10px] text-gray-400 uppercase tracking-widest font-bold">© 2025 OldSchool Tees Admin</p>
+      </div>
     </div>
   </main>
+
 </div>

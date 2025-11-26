@@ -1,51 +1,42 @@
-import { Component, inject, computed, signal } from '@angular/core'; // Importar signal
+import { Component, inject, computed, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router, RouterLink, RouterLinkActive } from '@angular/router'; // Importar RouterLinkActive
-import { AuthService } from '../../services/auth'; // Corregir ruta
-import { CartService } from '../../services/cart'; // Corregir ruta
+import { Router, RouterLink, RouterLinkActive } from '@angular/router';
+import { AuthService } from '../../services/auth';
+import { CartService } from '../../services/cart';
 
 @Component({
   selector: 'app-navbar',
   standalone: true,
-  imports: [CommonModule, RouterLink, RouterLinkActive], // Añadir RouterLinkActive
+  imports: [CommonModule, RouterLink, RouterLinkActive],
   templateUrl: './navbar.html',
 })
-
 export class NavbarComponent {
-  // Inyección de servicios
+  
   public authService = inject(AuthService);
   public cartService = inject(CartService);
   private router = inject(Router);
 
-  // Señal computada para el total de items del carrito
+  // Computar items del carrito
   public totalCartItems = computed(() => {
     const cart = this.cartService.cart();
-    if (!cart || !cart.items || cart.items.length === 0) {
-      return 0;
-    }
-    // Sumar las 'cantidades' de cada item
+    if (!cart || !cart.items) return 0;
     return cart.items.reduce((total, item) => total + item.cantidad, 0);
   });
 
-  // Estado para el menú móvil
-  public isMobileMenuOpen = signal(false); // Usar signal
+  // Estado del menú móvil
+  public isMobileMenuOpen = signal(false);
 
   toggleMobileMenu(): void {
-    this.isMobileMenuOpen.update(isOpen => !isOpen); // Actualizar signal
+    this.isMobileMenuOpen.update(isOpen => !isOpen);
   }
 
-  /**
-   * Cierra el menú móvil (usado al hacer clic en un enlace)
-   */
   closeMobileMenu(): void {
-    this.isMobileMenuOpen.set(false); // Setear signal
+    this.isMobileMenuOpen.set(false);
   }
 
-  /**
-   * Maneja el cierre de sesión del usuario
-   */
   logout(): void {
-    if (confirm('¿Estás seguro de que quieres cerrar sesión?')) {
+    // Usamos confirm nativo o podrías usar un modal más bonito
+    if (confirm('¿Cerrar sesión?')) {
       this.authService.logout();
       this.cartService.clearCartOnLogout();
       this.router.navigate(['/login']);
