@@ -9,8 +9,8 @@ import { finalize } from 'rxjs/operators';
   selector: 'app-admin-logs',
   standalone: true,
   imports: [CommonModule],
-  templateUrl: './admin-logs.html', // Asegúrate de que coincida con tu archivo HTML
-  // styleUrls: ['./admin-logs.css']
+  templateUrl: './admin-logs.html', 
+  styleUrls: ['./admin-logs.css']
 })
 export class AdminLogsComponent implements OnInit, OnDestroy {
 
@@ -45,7 +45,7 @@ export class AdminLogsComponent implements OnInit, OnDestroy {
     if (showLoading) this.isLoading = true;
     if (showLoading) this.error = '';
 
-    // 1. Status
+    // Status
     this.monitoringService.getSystemStatus()
       .pipe(
         finalize(() => {
@@ -66,7 +66,7 @@ export class AdminLogsComponent implements OnInit, OnDestroy {
         }
       });
 
-    // 2. Metrics
+    //Metrics
     this.monitoringService.getSystemMetrics().subscribe({
       next: (data) => {
         this.metrics = data;
@@ -75,7 +75,7 @@ export class AdminLogsComponent implements OnInit, OnDestroy {
       error: (err) => console.warn('Error métricas:', err)
     });
 
-    // 3. Logs
+    
     // Verificamos si existe el método antes de llamarlo para evitar errores si no actualizaste el servicio aún
     if (this.monitoringService.getRecentLogs) {
         this.monitoringService.getRecentLogs().subscribe({
@@ -93,7 +93,7 @@ export class AdminLogsComponent implements OnInit, OnDestroy {
     return Math.round((this.metrics.memory_used_mb / this.metrics.memory_total_mb) * 100);
   }
 
-  // --- MÉTODO DE DESCARGA CORREGIDO ---
+  // MÉTODO DE DESCARGA CORREGIDO ---
   downloadLogs(): void {
     this.monitoringService.downloadLogFile().subscribe({
       next: (blob: Blob) => {
@@ -101,7 +101,7 @@ export class AdminLogsComponent implements OnInit, OnDestroy {
         const url = window.URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
-        a.download = 'app.log'; // Nombre del archivo al guardar
+        a.download = 'app.log'; 
         document.body.appendChild(a);
         a.click();
         document.body.removeChild(a);
