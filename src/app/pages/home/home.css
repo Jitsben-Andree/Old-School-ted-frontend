@@ -568,10 +568,8 @@
   color: #033658;
 }
 
-<<<<<<< HEAD
-=======
-/* ==== Scrollbar Personalizado ===== */
->>>>>>> 32f1429 (Mejoras de diseño en home, footer y testimonios con gifs)
+
+
 ::-webkit-scrollbar {
   width: 10px;           
 }

@@ -8,7 +8,7 @@
       <div class="flex-shrink-0 flex items-center gap-6">
   <a routerLink="/" (click)="closeMobileMenu()" class="group flex items-center gap-3 cursor-pointer">
 
-    <img src="assets/logo.png"
+    <img src="../../../assets/Logo.png"
          alt="OST"
          class="h-10 w-10 object-contain filter drop-shadow-lg rounded-md">
 
@@ -28,14 +28,14 @@
       <!-- SECCIÓN CENTRAL: MENÚ DE NAVEGACIÓN -->
       <div class="hidden lg:flex items-center space-x-10">
         
-        <!-- Novedades (Destacado) -->
+        <!-- Novedades -->
         <a routerLink="/" 
            class="text-xs font-bold text-[#F7CE46] hover:text-white uppercase tracking-widest transition-colors duration-300 scale-100 hover:scale-105 transform">
            Novedades
         </a>
 
-        <!-- Catálogo (Antes Equipaciones) -->
-        <a routerLink="/" 
+        <!-- Catálogo-->
+        <a routerLink="/catalogo" 
            routerLinkActive="text-white border-b-2 border-white" 
            [routerLinkActiveOptions]="{exact: true}"
            class="text-xs font-bold text-gray-300 hover:text-white uppercase tracking-widest transition-all duration-300 py-1 border-b-2 border-transparent">

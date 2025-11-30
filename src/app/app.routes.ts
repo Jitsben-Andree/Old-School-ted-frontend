@@ -26,6 +26,7 @@ import { AdminPromocionesComponent } from './pages/admin/admin-promociones/admin
 import { AdminAsignacionesComponent } from './pages/admin/admin-asignaciones/admin-asignaciones';
 import { ProductDetailComponent } from './pages/product-detail/product-detail';
 import { UnlockAccountComponent } from './pages/unlock/unlock';
+import { CatalogoComponent } from './pages/catalogo/catalogo';
 
 export const routes: Routes = [
   // Rutas Públicas
@@ -39,6 +40,7 @@ export const routes: Routes = [
   { path: 'cart', component: CartComponent, canActivate: [authGuard] },
   { path: 'checkout', component: CheckoutComponent, canActivate: [authGuard] },
   { path: 'mis-pedidos', component: MyOrdersComponent, canActivate: [authGuard] },
+  { path: 'catalogo', component: CatalogoComponent },
 
   // Rutas de Administrador
   {
