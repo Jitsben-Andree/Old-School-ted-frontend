@@ -1,18 +1,27 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { RouterTestingModule } from '@angular/router/testing';
 
-import { Catalogo } from './catalogo';
+import { CatalogoComponent } from './catalogo';
+// si necesitas directamente el servicio, por ejemplo para más tests:
+// import { ProductService } from '../../services/product';
 
-describe('Catalogo', () => {
-  let component: Catalogo;
-  let fixture: ComponentFixture<Catalogo>;
+describe('CatalogoComponent', () => {
+  let component: CatalogoComponent;
+  let fixture: ComponentFixture<CatalogoComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [Catalogo]
-    })
-    .compileComponents();
+      imports: [
+        CatalogoComponent,      // standalone
+        HttpClientTestingModule, // 💥 para HttpClient en ProductService
+        RouterTestingModule      // por si Catalogo usa Router/ActivatedRoute
+      ],
+      // SOLO si ProductService NO tiene providedIn: 'root'
+      // providers: [ProductService]
+    }).compileComponents();
 
-    fixture = TestBed.createComponent(Catalogo);
+    fixture = TestBed.createComponent(CatalogoComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
