@@ -1,7 +1,11 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { of } from 'rxjs';
-import { provideRouter, Router } from '@angular/router';
+import { Router } from '@angular/router';
+import { RouterTestingModule } from '@angular/router/testing';
+
 import { NavbarComponent } from './navbar';
+import { AuthService } from '../../services/auth';
+import { CartService } from '../../services/cart';
 
 class AuthServiceMock {
   isLoggedIn() { return false; }
@@ -9,9 +13,20 @@ class AuthServiceMock {
 }
 
 class CartServiceMock {
-  cart = { set: jasmine.createSpy('set') };
-  getMiCarrito() { return of(null); }
-  clearCartOnLogout = jasmine.createSpy('clearCartOnLogout'); 
+  // ✅ simulamos un signal: función que devuelve array, y además tiene .set()
+  cart: any;
+
+  constructor() {
+    const fn: any = jasmine.createSpy('cart').and.returnValue([]); // cart()
+    fn.set = jasmine.createSpy('set');                             // cart.set(...)
+    this.cart = fn;
+  }
+
+  getMiCarrito() {
+    return of(null);
+  }
+
+  clearCartOnLogout = jasmine.createSpy('clearCartOnLogout');
 }
 
 describe('Navbar', () => {
@@ -21,11 +36,15 @@ describe('Navbar', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [NavbarComponent],
+      imports: [
+        NavbarComponent,
+        RouterTestingModule.withRoutes([
+          { path: 'login', component: class DummyComponent {} }
+        ])
+      ],
       providers: [
-        provideRouter([{ path: 'login', component: class Dummy {} }]),
-        { provide: (await import('../../services/auth')).AuthService, useClass: AuthServiceMock },
-        { provide: (await import('../../services/cart')).CartService, useClass: CartServiceMock },
+        { provide: AuthService, useClass: AuthServiceMock },
+        { provide: CartService, useClass: CartServiceMock },
       ],
     }).compileComponents();
 
@@ -39,17 +58,17 @@ describe('Navbar', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should logout, limpiar carrito y navegar a /login', async () => {
-    const auth = TestBed.inject((await import('../../services/auth')).AuthService) as unknown as AuthServiceMock;
-    const cart = TestBed.inject((await import('../../services/cart')).CartService) as unknown as CartServiceMock;
+  it('should logout, limpiar carrito y navegar a /login', () => {
+    const auth = TestBed.inject(AuthService) as unknown as AuthServiceMock;
+    const cart = TestBed.inject(CartService) as unknown as CartServiceMock;
 
-    spyOn(window, 'confirm').and.returnValue(true); // ✅ simulamos que el usuario confirma
+    spyOn(window, 'confirm').and.returnValue(true); // simulamos que el usuario confirma
     const navSpy = spyOn(router, 'navigate').and.resolveTo(true);
 
     component.logout();
 
     expect(auth.logout).toHaveBeenCalled();
-    expect(cart.clearCartOnLogout).toHaveBeenCalled(); // ✅ corregido
+    expect(cart.clearCartOnLogout).toHaveBeenCalled();
     expect(navSpy).toHaveBeenCalledWith(['/login']);
   });
 });

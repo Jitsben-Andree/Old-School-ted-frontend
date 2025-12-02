@@ -12,4 +12,5 @@ import { FooterComponent } from "./components/footer/footer"; // 2. Importar Nav
 })
 export class App {
   title = 'oldschool-tees-frontend';
+  
 }

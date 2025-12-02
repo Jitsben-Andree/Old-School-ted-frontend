@@ -1,13 +1,18 @@
 import { TestBed } from '@angular/core/testing';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 
-import { Monitoring } from './monitoring';
+import { MonitoringService } from './monitoring';
 
-describe('Monitoring', () => {
-  let service: Monitoring;
+describe('MonitoringService', () => {
+  let service: MonitoringService;
 
   beforeEach(() => {
-    TestBed.configureTestingModule({});
-    service = TestBed.inject(Monitoring);
+    TestBed.configureTestingModule({
+      imports: [HttpClientTestingModule],  // 💥 aquí se registra _HttpClient
+      providers: [MonitoringService]
+    });
+
+    service = TestBed.inject(MonitoringService);
   });
 
   it('should be created', () => {
