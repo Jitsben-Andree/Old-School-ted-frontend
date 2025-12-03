@@ -30,6 +30,8 @@
     "@angular/router": "^20.3.0",
     "@sentry/angular": "^10.27.0",
     "file-saver": "^2.0.5",
+    "jspdf": "^3.0.4",
+    "jspdf-autotable": "^5.0.2",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0",
     "zone.js": "~0.15.0"

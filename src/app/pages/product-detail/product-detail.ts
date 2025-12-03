@@ -17,7 +17,6 @@ import { FormsModule } from '@angular/forms';
 })
 export class ProductDetailComponent implements OnInit {
   
-  // Servicios
   private route = inject(ActivatedRoute);
   private router = inject(Router);
   private location = inject(Location);
@@ -25,35 +24,26 @@ export class ProductDetailComponent implements OnInit {
   private cartService = inject(CartService);
   public authService = inject(AuthService);
 
-  // Estado del Producto
   public product = signal<ProductoResponse | null>(null);
   public isLoading = signal(true);
   public error = signal<string | null>(null);
   
-  // Estado de UI 
   public activeImageIndex = signal(0);
 
-  // Estado UI 
   public quantityToAdd = signal(1);
   public showSizeChart = signal(false);
   public isWishlisted = signal(false);
   public toastMessage = signal<{text: string, type: 'success' | 'error'} | null>(null);
 
-  
-  
-  // Acordeones
   public activeAccordion = signal<string | null>('description'); 
 
-  // Personalización
   public personalizationMode = signal<'player' | 'custom' | null>(null); 
   public selectedPlayer: string = ''; 
   public customName: string = '';
   public customNumber: string = '';
   
-  // Parches
   public selectedPatch = signal<string | null>(null); 
 
-  // Precio Calculado
   public totalPrice = computed(() => {
     const prod = this.product();
     if (!prod) return 0;
@@ -94,7 +84,6 @@ export class ProductDetailComponent implements OnInit {
         this.quantityToAdd.set(1);
         this.activeImageIndex.set(0);
         
-        // Resetear campos
         this.personalizationMode.set(null);
         this.selectedPlayer = '';
         this.customName = '';
@@ -107,8 +96,6 @@ export class ProductDetailComponent implements OnInit {
       }
     });
   }
-
- 
 
   setActiveImage(index: number): void {
     this.activeImageIndex.set(index);
@@ -147,10 +134,8 @@ export class ProductDetailComponent implements OnInit {
       return;
     }
 
-    //  RECOPILACIÓN DE DATOS DE PERSONALIZACIÓN 
     let personalizacionData: { tipo: string, numero: string, nombre: string, precio: number } | null = null;
 
-    //  Leyenda Seleccionada ("10 - MESSI")
     if (this.personalizationMode() === 'player' && this.selectedPlayer) {
       const parts = this.selectedPlayer.split('-');
       if (parts.length >= 2) {
@@ -162,7 +147,6 @@ export class ProductDetailComponent implements OnInit {
         };
       }
     } 
-    //  Nombre Personalizado
     else if (this.personalizationMode() === 'custom') {
       if (this.customName || this.customNumber) {
         personalizacionData = {
@@ -174,10 +158,8 @@ export class ProductDetailComponent implements OnInit {
       }
     }
 
-    // Parches
     const parcheSeleccionado = this.selectedPatch() ? { tipo: this.selectedPatch()!, precio: 73.00 } : null;
 
-    // enviaar a carrito
     this.cartService.addItem(currentProduct.id, this.quantityToAdd(), personalizacionData, parcheSeleccionado)
       .pipe(take(1))
       .subscribe({
@@ -185,6 +167,10 @@ export class ProductDetailComponent implements OnInit {
           let msg = `¡${currentProduct.nombre} añadido!`;
           if (personalizacionData) msg += ' (Personalizado)';
           this.showToast(msg, 'success');
+          
+          setTimeout(() => {
+            this.router.navigate(['/cart']);
+          }, 800);
         },
         error: (err) => {
           this.showToast('Error al añadir al carrito', 'error');
@@ -193,7 +179,6 @@ export class ProductDetailComponent implements OnInit {
       });
   }
 
-  
   toggleWishlist(): void {
     this.isWishlisted.update(v => !v);
     this.showToast(this.isWishlisted() ? 'Añadido a favoritos' : 'Eliminado de favoritos', 'success');
