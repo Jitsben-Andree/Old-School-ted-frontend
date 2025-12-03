@@ -1,7 +1,4 @@
-<!-- 
-  Añadimos un bloque <style> para las animaciones personalizadas de "fadeInUp" y "shake".
-  Estas son difíciles de hacer solo con Tailwind.
--->
+
 <style>
   @keyframes fadeInUp {
     from {
@@ -14,9 +11,7 @@
     }
   }
   .animate-fadeInUp {
-    /* Usamos 'animation' para aplicar la animación al cargar.
-      'forwards' la mantiene en su estado final.
-    */
+
     animation: fadeInUp 0.6s ease-out forwards;
   }
 
@@ -51,10 +46,7 @@
 
   <div class="absolute inset-0 bg-black/40"></div>
 
-  <!-- 
-    MODIFICACIÓN: 
-    Añadimos 'animate-fadeInUp' para la animación de carga.
-  -->
+
   <div class="relative z-10 mx-auto w-full max-w-[520px] bg-white/90 p-8 rounded-lg shadow-2xl backdrop-blur-md animate-fadeInUp">
     <h2 class="text-3xl font-bold text-center mb-6 text-gray-900">Iniciar Sesión</h2>
 
@@ -99,11 +91,7 @@
         </div>
       </div>
 
-      <!-- 
-        MODIFICACIÓN: 
-        Usamos [class.animate-shake] para aplicar la animación
-        solo cuando el errorMessage existe.
-      -->
+     
       <div 
         *ngIf="errorMessage" 
         class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg relative mb-4"

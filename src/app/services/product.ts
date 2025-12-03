@@ -7,7 +7,6 @@ import { Categoria } from '../models/categoria';
 import { ProductoRequest } from '../models/producto-request';
 import { AuthService } from './auth';
 
-// Interfaz simple para la respuesta de subida de imagen (opcional, ya que ahora devolvemos ProductoResponse)
 interface ImageUploadResponse {
   message: string;
   imageUrl: string;
@@ -23,11 +22,10 @@ export class ProductService {
   // URLs configuradas según tu Backend
   private API_URL_PUBLIC = 'http://localhost:8080/api/v1/productos';
   private API_URL_ADMIN = 'http://localhost:8080/api/v1/admin/productos';
-  // private API_URL_FILES = 'http://localhost:8080/api/v1/files'; // Ya no se usa directamente para subir
   private API_URL_CATEGORIAS = 'http://localhost:8080/api/v1/categorias';
   private API_URL_CATEGORIAS_ADMIN = 'http://localhost:8080/api/v1/admin/categorias';
 
-  // --- MÉTODOS PÚBLICOS ---
+  //  MÉTODOS PÚBLICOS 
 
   getAllProductosActivos(): Observable<ProductoResponse[]> {
     return this.http.get<ProductoResponse[]>(this.API_URL_PUBLIC).pipe(
@@ -54,7 +52,7 @@ export class ProductService {
     );
   }
 
-  // --- MÉTODOS DE ADMINISTRADOR (PRODUCTOS) ---
+  //  MÉTODOS DE ADMINISTRADOR (PRODUCTOS) 
 
   getAllProductosAdmin(): Observable<ProductoResponse[]> {
     return this.http.get<ProductoResponse[]>(`${this.API_URL_ADMIN}/all`, { headers: this.createAuthHeaders() }).pipe(
@@ -82,10 +80,6 @@ export class ProductService {
 
   // --- GESTIÓN DE IMÁGENES ---
 
-  /**
-   * 1. Subir Portada
-   * Endpoint: POST /admin/productos/{id}/imagen
-   */
   uploadProductImage(productId: number, file: File): Observable<ProductoResponse> {
     const formData = new FormData();
     formData.append('file', file, file.name);
@@ -97,10 +91,7 @@ export class ProductService {
     );
   }
 
-  /**
-   * 2. Subir Imagen a Galería
-   * Endpoint: POST /admin/productos/{id}/galeria
-   */
+ 
   uploadGalleryImage(productId: number, file: File): Observable<ProductoResponse> {
     const formData = new FormData();
     formData.append('file', file, file.name);
@@ -112,10 +103,7 @@ export class ProductService {
     );
   }
 
-  /**
-   * 3. Borrar Imagen de Galería
-   * Endpoint: DELETE /admin/productos/{id}/galeria/{imageId}
-   */
+
   deleteGalleryImage(productId: number, imageId: number): Observable<void> {
     return this.http.delete<void>(`${this.API_URL_ADMIN}/${productId}/galeria/${imageId}`, {
       headers: this.createAuthHeaders()
@@ -124,7 +112,7 @@ export class ProductService {
     );
   }
 
-  // --- GESTIÓN DE CATEGORÍAS ---
+  //  GESTIÓN DE CATEGORÍAS 
 
   createCategoria(request: { nombre: string, descripcion?: string }): Observable<Categoria> {
     return this.http.post<Categoria>(this.API_URL_CATEGORIAS_ADMIN, request, { headers: this.createAuthHeaders() }).pipe(
@@ -144,7 +132,7 @@ export class ProductService {
     );
   }
 
-  // --- PROMOCIONES ---
+  //  PROMOCIONES 
 
   associatePromocionToProducto(productoId: number, promocionId: number): Observable<void> {
     const url = `${this.API_URL_ADMIN}/${productoId}/promociones/${promocionId}`; 
@@ -160,7 +148,7 @@ export class ProductService {
     );
   }
 
-  // --- EXPORTAR EXCEL ---
+  //  EXPORTAR EXCEL 
   
   exportProductosToExcel(): Observable<Blob> {
     const url = `${this.API_URL_ADMIN}/exportar-excel`;
@@ -172,7 +160,7 @@ export class ProductService {
     );
   }
 
-  // --- HELPER Y MANEJADORES DE ERRORES ---
+  //  HELPER Y MANEJADORES DE ERRORES 
 
   private createAuthHeaders(isFormData: boolean = false): HttpHeaders {
     const token = this.authService.jwtToken();
@@ -180,8 +168,7 @@ export class ProductService {
         console.error("Token no encontrado para crear cabeceras");
         return new HttpHeaders();
     }
-    // Angular maneja automáticamente el Content-Type para FormData (boundary),
-    // así que no debemos establecerlo manualmente si isFormData es true.
+    
     return new HttpHeaders().set('Authorization', `Bearer ${token}`);
   }
 
@@ -199,8 +186,7 @@ export class ProductService {
     let message = 'Ocurrió un error en la operación de administrador.';
 
     if (errorBody instanceof Blob && errorBody.type === "application/json") {
-       // Si recibimos un blob de error, es difícil parsearlo síncronamente aquí, 
-       // devolvemos un mensaje genérico con el status.
+      
        message = `Error ${error.status}: ${error.statusText}`;
     } else if (typeof errorBody === 'string') {
        message = errorBody;

@@ -1,4 +1,4 @@
-// Coincide con UpdateCantidadRequest.java
+//  UpdateCantidadRequest.java
 export interface UpdateCantidadRequest {
   nuevaCantidad: number;
 }

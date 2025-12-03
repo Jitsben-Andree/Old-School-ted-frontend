@@ -14,9 +14,9 @@ export class PromocionService {
   private authService = inject(AuthService);
   // Separar URLs públicas y de admin
   private API_URL_PUBLIC = 'http://localhost:8080/api/v1/promociones';
-  private API_URL_ADMIN = 'http://localhost:8080/api/v1/admin/promociones'; // <<< NUEVA URL BASE ADMIN
+  private API_URL_ADMIN = 'http://localhost:8080/api/v1/admin/promociones'; 
 
-  // --- Helper para cabeceras ---
+  //  Helper para cabeceras 
   private createAuthHeaders(): HttpHeaders {
      const token = this.authService.jwtToken();
      if (!token) {
@@ -26,11 +26,11 @@ export class PromocionService {
      return new HttpHeaders().set('Authorization', `Bearer ${token}`);
   }
 
-  // --- Métodos Públicos ---
+  //  Métodos Públicos 
   getAllPromociones(): Observable<Promocion[]> {
     // Usar URL pública
     return this.http.get<Promocion[]>(this.API_URL_PUBLIC).pipe(
-      catchError(this.handleError) // Usar manejo de error genérico
+      catchError(this.handleError) 
     );
   }
 

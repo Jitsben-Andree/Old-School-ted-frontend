@@ -38,6 +38,6 @@ export class FooterComponent {
   onSubscribe(email: string) {
     // Aquí podrías integrar tu servicio real de newsletter
     console.log('Suscripción footer:', email);
-    alert('¡Gracias por suscribirte! 😄');
+    alert('¡Gracias por suscribirte! ');
   }
 }

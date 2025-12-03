@@ -22,21 +22,21 @@ export class CatalogoComponent implements OnInit {
   public authService = inject(AuthService);
   private router = inject(Router);
 
-  // --- DATOS ---
-  public allProducts = signal<ProductoResponse[]>([]); // Todos los productos originales
+  //  DATOS 
+  public allProducts = signal<ProductoResponse[]>([]);
   public categories = signal<Categoria[]>([]);
   
-  // --- ESTADO DE CARGA ---
+  //  ESTADO DE CARGA 
   public isLoading = signal(true);
   public error = signal<string | null>(null);
 
-  // --- FILTROS ---
+  //  FILTROS 
   public searchTerm = signal('');
-  public selectedCategory = signal<string>('all'); // ID de categoría o 'all'
+  public selectedCategory = signal<string>('all');
   public selectedSize = signal<string>('all');
-  public priceRange = signal<number>(1000); // Precio máximo (slider)
+  public priceRange = signal<number>(1000);
 
-  // --- FILTRADO REACTIVO (COMPUTED) ---
+  //  FILTRADO REACTIVO (COMPUTED) 
   public filteredProducts = computed(() => {
     const term = this.searchTerm().toLowerCase();
     const cat = this.selectedCategory();
@@ -47,9 +47,7 @@ export class CatalogoComponent implements OnInit {
       // Filtro por Nombre
       const matchesName = prod.nombre.toLowerCase().includes(term) || 
                           (prod.descripcion && prod.descripcion.toLowerCase().includes(term));
-      
-      // Filtro por Categoría (comparamos ID o Nombre según lo que guardes)
-      // Aquí asumo que 'selectedCategory' guarda el ID como string
+
       const matchesCategory = cat === 'all' || prod.categoriaNombre === this.getCategoryNameById(cat);
       
       // Filtro por Talla
@@ -62,7 +60,7 @@ export class CatalogoComponent implements OnInit {
     });
   });
 
-  // Helper para obtener nombre de categoría (puedes ajustar esto según tu lógica real)
+  // Helper para obtener nombre de categoría 
   private getCategoryNameById(id: string): string {
       const category = this.categories().find(c => c.idCategoria.toString() === id);
       return category ? category.nombre : '';
@@ -75,13 +73,13 @@ export class CatalogoComponent implements OnInit {
   loadData(): void {
     this.isLoading.set(true);
     
-    // 1. Cargar Categorías
+    // Cargar Categorías
     this.productService.getAllCategorias().pipe(take(1)).subscribe({
         next: (cats) => this.categories.set(cats),
         error: (err) => console.error('Error cargando categorías', err)
     });
 
-    // 2. Cargar Productos
+    // Cargar Productos
     this.productService.getAllProductosActivos().pipe(take(1)).subscribe({
       next: (data) => {
         this.allProducts.set(data);
@@ -94,7 +92,7 @@ export class CatalogoComponent implements OnInit {
     });
   }
 
-  // --- ACCIONES ---
+  //  ACCIONES 
   onAddToCart(productId: number, productName: string): void {
     if (!this.authService.isLoggedIn()) {
       if(confirm('Inicia sesión para comprar. ¿Ir al login?')) {

@@ -69,15 +69,13 @@ export class AdminProductsComponent implements OnInit {
        const productoActual = this.products().find(p => p.id === id);
        if (!productoActual) return;
 
-       // Intentamos reconstruir el request mínimo necesario
-       // NOTA: Esto asume que el backend permite updates parciales o que tienes todos los datos
-       // Si falla por categoriaId null, el backend debe corregirse para devolver el ID en el getAll
+      
        const request = {
            nombre: productoActual.nombre,
            descripcion: productoActual.descripcion,
            precio: productoActual.precioOriginal || productoActual.precio,
            talla: productoActual.talla,
-           categoriaId: 1, // FALLBACK TEMPORAL: Debería venir del objeto producto (productoActual.categoriaId)
+           categoriaId: 1, 
            activo: true
        };
 

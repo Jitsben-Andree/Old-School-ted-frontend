@@ -50,7 +50,7 @@ export class AdminPedidosComponent implements OnInit {
     });
   }
 
-  // --- Métodos de Actualización ---
+  //  Métodos de Actualización 
 
   onEstadoPedidoChange(pedidoId: number, event: Event): void {
     const select = event.target as HTMLSelectElement;
@@ -93,7 +93,6 @@ export class AdminPedidosComponent implements OnInit {
 
     updateObservable.pipe(take(1)).subscribe({
       next: (pedidoActualizado) => {
-        // Actualización optimista local
         this.pedidos.update(current => 
            current.map(p => p.pedidoId === pedidoId ? pedidoActualizado : p)
         );
@@ -101,7 +100,7 @@ export class AdminPedidosComponent implements OnInit {
       error: (err: HttpErrorResponse | Error) => {
         const message = err instanceof HttpErrorResponse ? err.error?.message || err.message : err.message;
         this.error.set(`Error al actualizar ${tipo}: ${message}`);
-        this.loadPedidos(); // Revertir cambios recargando
+        this.loadPedidos(); 
         alert(`No se pudo actualizar: ${message}`);
       }
     });

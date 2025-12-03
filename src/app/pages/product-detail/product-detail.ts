@@ -147,12 +147,12 @@ export class ProductDetailComponent implements OnInit {
       return;
     }
 
-    // --- RECOPILACIÓN DE DATOS DE PERSONALIZACIÓN ---
+    //  RECOPILACIÓN DE DATOS DE PERSONALIZACIÓN 
     let personalizacionData: { tipo: string, numero: string, nombre: string, precio: number } | null = null;
 
     //  Leyenda Seleccionada ("10 - MESSI")
     if (this.personalizationMode() === 'player' && this.selectedPlayer) {
-      const parts = this.selectedPlayer.split('-'); // Separamos por el guión
+      const parts = this.selectedPlayer.split('-');
       if (parts.length >= 2) {
         personalizacionData = {
           tipo: 'Leyenda',

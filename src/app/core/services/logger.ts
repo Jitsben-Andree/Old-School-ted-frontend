@@ -25,11 +25,9 @@ export class LoggerService {
 
   private print(level: string, color: string, message: string, args: any[]): void {
     const timestamp = new Date().toISOString();
-    // Formato visual: [FECHA] [NIVEL]: Mensaje
+ 
     const logPrefix = `[${timestamp}] [%c${level}%c]:`;
-    
-    // Usamos estilos CSS en la consola para diferenciar niveles
-    // %c aplica el estilo que sigue en el siguiente argumento
+  
     console.log(logPrefix, `color: ${color}; font-weight: bold`, 'color: inherit', message, ...args);
   }
 }

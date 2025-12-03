@@ -1,6 +1,4 @@
-/* ... (importaciones de Tailwind existentes) ... */
 
-/* --- Estilos para el Fondo de Video --- */
 .video-background-container {
   position: fixed; /* Fija el contenedor a la pantalla */
   top: 0;
@@ -18,7 +16,7 @@
   filter: brightness(0.4); /* Oscurece el video para que el texto resalte */
 }
 
-/* Contenedor para centrar el formulario */
+
 .auth-page-container {
   min-height: calc(100vh - 4rem); /* 100% alto menos la altura del navbar */
   display: flex;

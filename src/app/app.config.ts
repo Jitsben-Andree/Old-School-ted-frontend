@@ -22,7 +22,7 @@ export const appConfig: ApplicationConfig = {
       withInterceptors([jwtInterceptor])
     ),
 
-    // --- CONFIGURACIÓN DE SENTRY  ---
+    //  CONFIGURACIÓN DE SENTRY  
     {
       provide: ErrorHandler,
       useValue: Sentry.createErrorHandler({

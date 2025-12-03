@@ -9,7 +9,7 @@ import { take } from 'rxjs';
 @Component({
   selector: 'app-admin-promociones',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, DatePipe], // Añadir DatePipe
+  imports: [CommonModule, ReactiveFormsModule, DatePipe], 
   templateUrl: './admin-promociones.html',
 })
 export class AdminPromocionesComponent implements OnInit {
@@ -37,11 +37,10 @@ export class AdminPromocionesComponent implements OnInit {
     this.promocionForm = this.fb.group({
       codigo: ['', [Validators.required, Validators.maxLength(50)]],
       descripcion: ['', [Validators.required, Validators.maxLength(255)]],
-      descuento: [null, [Validators.required, Validators.min(0.01), Validators.max(100)]], // Asumir porcentaje
-      // Usar formato YYYY-MM-DDTHH:mm para datetime-local
+      descuento: [null, [Validators.required, Validators.min(0.01), Validators.max(100)]],
       fechaInicio: ['', Validators.required],
       fechaFin: ['', Validators.required],
-      activa: [true] // Por defecto activa al crear
+      activa: [true]
     });
   }
 
@@ -49,9 +48,6 @@ export class AdminPromocionesComponent implements OnInit {
     this.loadPromociones();
   }
 
-  /**
-   * Carga la lista de todas las promociones
-   */
   loadPromociones(): void {
     this.isLoading.set(true);
     this.error.set(null);
@@ -68,9 +64,7 @@ export class AdminPromocionesComponent implements OnInit {
     });
   }
 
-  /**
-   * Maneja el envío del formulario (Crear o Editar)
-   */
+
   manejarSubmit(): void {
     if (this.promocionForm.invalid) {
       this.promocionForm.markAllAsTouched();
@@ -111,7 +105,7 @@ export class AdminPromocionesComponent implements OnInit {
     this.formError.set(null);
 
     if (this.editMode()) {
-      // --- Lógica Editar ---
+      //  Lógica Editar 
       const id = this.currentEditPromocionId();
       if (!id) return;
 
@@ -129,7 +123,7 @@ export class AdminPromocionesComponent implements OnInit {
         }
       });
     } else {
-      // --- Lógica Crear ---
+      //  Lógica Crear 
       this.promocionService.crearPromocion(request).pipe(take(1)).subscribe({
         next: (newPromo) => {
           this.promociones.update(current => [...current, newPromo]);
@@ -144,9 +138,7 @@ export class AdminPromocionesComponent implements OnInit {
     }
   }
 
-  /**
-   * Prepara el formulario para editar una promoción
-   */
+
   onEdit(promocion: Promocion): void {
     this.editMode.set(true);
     this.currentEditPromocionId.set(promocion.idPromocion);
@@ -167,25 +159,22 @@ export class AdminPromocionesComponent implements OnInit {
     });
   }
 
-  /**
-   * Desactiva (soft delete) una promoción
-   */
   onDeactivate(id: number, codigo: string): void {
     if (!confirm(`¿Estás seguro de desactivar la promoción "${codigo}"?`)) {
       return;
     }
 
-    this.isLoading.set(true); // Podría usar un loading específico si prefieres
+    this.isLoading.set(true); 
     this.error.set(null);
 
     this.promocionService.desactivarPromocion(id).pipe(take(1)).subscribe({
       next: () => {
-        // Actualizar localmente el estado 'activa'
+        
         this.promociones.update(current =>
           current.map(p => p.idPromocion === id ? { ...p, activa: false } : p)
         );
         this.isLoading.set(false);
-        if(this.currentEditPromocionId() === id) { this.resetForm(); } // Resetear si se estaba editando
+        if(this.currentEditPromocionId() === id) { this.resetForm(); } 
       },
       error: (err: Error) => {
         this.error.set("Error al desactivar promoción: " + err.message);
@@ -194,18 +183,14 @@ export class AdminPromocionesComponent implements OnInit {
     });
   }
 
-   /**
-   * Helper para formatear fecha ISO a formato de input datetime-local
-   * Entrada: "2025-10-26T14:30:00Z" o similar
-   * Salida: "2025-10-26T14:30"
-   */
+ 
    private formatDateForInput(isoString: string): string {
        if (!isoString) return '';
        try {
             // Crear objeto Date y obtener componentes locales
             const date = new Date(isoString);
             const year = date.getFullYear();
-            const month = (date.getMonth() + 1).toString().padStart(2, '0'); // Meses son 0-indexados
+            const month = (date.getMonth() + 1).toString().padStart(2, '0'); 
             const day = date.getDate().toString().padStart(2, '0');
             const hours = date.getHours().toString().padStart(2, '0');
             const minutes = date.getMinutes().toString().padStart(2, '0');
@@ -213,22 +198,20 @@ export class AdminPromocionesComponent implements OnInit {
             return `${year}-${month}-${day}T${hours}:${minutes}`;
        } catch (e) {
             console.error("Error formateando fecha para input:", isoString, e);
-            return ''; // Devolver vacío si hay error
+            return ''; 
        }
    }
 
 
-  /**
-   * Resetea el formulario y sale del modo edición
-   */
+
   resetForm(): void {
-    this.promocionForm.reset({ activa: true }); // Resetear con activa=true por defecto
+    this.promocionForm.reset({ activa: true }); 
     this.editMode.set(false);
     this.currentEditPromocionId.set(null);
     this.formError.set(null);
   }
 
-  // --- TrackBy Function ---
+  //  TrackBy Function 
   trackById(index: number, item: Promocion): number {
     return item.idPromocion;
   }

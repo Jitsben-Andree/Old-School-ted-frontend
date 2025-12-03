@@ -1,7 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 
-import { ProductService } from './product'; // ⬅️ asegúrate del nombre/ruta real
+import { ProductService } from './product';
 
 describe('ProductService', () => {
   let service: ProductService;

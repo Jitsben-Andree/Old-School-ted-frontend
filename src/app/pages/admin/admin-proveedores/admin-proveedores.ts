@@ -67,7 +67,7 @@ export class AdminProveedoresComponent implements OnInit {
         error: (err) => this.error.set('Error al actualizar el proveedor: ' + err.message)
       });
     } else {
-      // --- MODO CREAR ---
+      // MODO CREAR 
       this.proveedorService.createProveedor(request).subscribe({
         next: (nuevoProveedor) => {
           this.proveedores.update(provs => [...provs, nuevoProveedor]);
@@ -82,7 +82,7 @@ export class AdminProveedoresComponent implements OnInit {
   cargarProveedorEnForm(proveedor: Proveedor): void {
     this.modoEdicion.set(true);
     this.proveedorIdActual.set(proveedor.idProveedor);
-    this.proveedorForm.patchValue(proveedor); // Carga todos los datos que coinciden
+    this.proveedorForm.patchValue(proveedor); 
   }
 
   // Elimina un proveedor

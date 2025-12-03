@@ -32,14 +32,14 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
   public  authService    = inject(AuthService);
   private router         = inject(Router);
   private renderer       = inject(Renderer2);
-  private http           = inject(HttpClient);   // para la API de noticias
+  private http           = inject(HttpClient);  
 
-  // 🛒 Productos
+  //  Productos
   public products  = signal<ProductoResponse[]>([]);
   public isLoading = signal(true);
   public error     = signal<string | null>(null);
 
-  // 📰 Noticias deportivas
+  // Noticias deportivas
   public sportsNews    = signal<any[]>([]);
   public isLoadingNews = signal(false);
   public errorNews     = signal<string | null>(null);
@@ -51,22 +51,20 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
 private botpressLoaded = false;
   ngOnInit(): void {
     this.loadProducts();
-    // this.loadSportsNews();  // si luego activas noticias
 this.showBotpress();
-    // 👇 mostrar chatbot SOLO cuando estoy en Home
     
   }
 
-  // === Lógica para tus Sliders ===
+  
   ngAfterViewInit(): void {
 
     
-    // 1. Slider principal (radios)
+    //  Slider principal (radios)
     this.setupAutoSlider();
     this.setupManualArrows();
 
-    // 2. Slider manual de colecciones
-    const slider = document.getElementById('manualSlider'); // contenedor
+    // Slider manual de colecciones
+    const slider = document.getElementById('manualSlider'); 
     const next   = document.getElementById('nextManual');
     const prev   = document.getElementById('prevManual');
 
@@ -74,7 +72,7 @@ this.showBotpress();
 
     const getStep = () => {
       const firstCard = slider.querySelector<HTMLElement>('.manual-item');
-      if (!firstCard) return 420; // Valor por defecto
+      if (!firstCard) return 420; 
       const style = getComputedStyle(slider);
       const gap = parseInt(style.gap || '20', 10);
       const width = firstCard.getBoundingClientRect().width;
@@ -116,17 +114,16 @@ this.showBotpress();
     this.unlisteners.forEach(off => { try { off(); } catch {} });
     this.unlisteners = [];
 
-    // 👇 ocultar chatbot cuando salgo del Home
+    // ocultar chatbot cuando salgo del Home
     this.hideBotpress();
   }
 
  private showBotpress(): void {
     const w = window as any;
-    // Botpress tiene una función 'show' que controla la visibilidad de su widget
+    // Botpress 
     if (w.botpressWebChat && typeof w.botpressWebChat.show === 'function') {
       w.botpressWebChat.show();
     } else {
-      // Si el chat tarda en cargar, intenta mostrarlo un poco más tarde
       setTimeout(() => {
         if (w.botpressWebChat && typeof w.botpressWebChat.show === 'function') {
            w.botpressWebChat.show();
@@ -137,7 +134,6 @@ this.showBotpress();
 
   private hideBotpress(): void {
     const w = window as any;
-    // Botpress tiene una función 'hide' para ocultar el widget
     if (w.botpressWebChat && typeof w.botpressWebChat.hide === 'function') {
       w.botpressWebChat.hide();
     }
@@ -157,7 +153,7 @@ this.showBotpress();
 
  
 
-  // --- Slider automático (Sección 1) ---
+  //  Slider automático (Sección 1) 
   setupAutoSlider(): void {
     let counter = 1;
     const intervalId = setInterval(() => {
@@ -165,9 +161,9 @@ this.showBotpress();
       if (radio) radio.checked = true;
       counter++;
       if (counter > 4) counter = 1;
-    }, 5000); // Cambia cada 5 segundos
+    }, 5000); 
 
-    this.unlisteners.push(() => clearInterval(intervalId)); // Limpiar al destruir
+    this.unlisteners.push(() => clearInterval(intervalId));
   }
 
   setupManualArrows(): void {
@@ -186,7 +182,7 @@ this.showBotpress();
     };
   }
 
-  // === Catálogo de Productos ===
+  //  Catálogo de Productos 
   loadProducts(): void {
     this.isLoading.set(true);
     this.error.set(null);
@@ -217,7 +213,7 @@ this.showBotpress();
     }
 
     const cantidad = 1;
-    this.error.set(null); // Limpiar error global
+    this.error.set(null); 
 
     this.cartService.addItem(productId, cantidad).pipe(take(1)).subscribe({
       next: (cartResponse) => {

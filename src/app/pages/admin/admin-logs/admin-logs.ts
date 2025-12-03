@@ -93,11 +93,10 @@ export class AdminLogsComponent implements OnInit, OnDestroy {
     return Math.round((this.metrics.memory_used_mb / this.metrics.memory_total_mb) * 100);
   }
 
-  // MÉTODO DE DESCARGA CORREGIDO ---
+  
   downloadLogs(): void {
     this.monitoringService.downloadLogFile().subscribe({
       next: (blob: Blob) => {
-        // Truco para descargar archivo desde Blob
         const url = window.URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;

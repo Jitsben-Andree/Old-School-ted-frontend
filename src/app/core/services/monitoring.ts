@@ -9,22 +9,18 @@ import { SystemMetrics, SystemStatus } from '../interface/monitoring';
 })
 export class MonitoringService {
 
-  // URL Base de tu API (incluyendo el context-path)
   private baseUrl = 'http://localhost:8080/api/v1';
 
   constructor(private http: HttpClient) { }
 
-  /**
-   * 1. ESTADO DEL SISTEMA (Adaptado para Actuator)
-   * Consume /actuator/health y lo transforma al formato que usa tu Dashboard.
-   */
+
   getSystemStatus(): Observable<SystemStatus> {
     return this.http.get<any>(`${this.baseUrl}/actuator/health`).pipe(
       map(response => {
         // Mapeamos la respuesta compleja de Actuator a tu interfaz simple
         return {
           app: response.status, // "UP"
-          database: response.components?.db?.status || 'UNKNOWN' // "UP" o "DOWN"
+          database: response.components?.db?.status || 'UNKNOWN' 
         };
       }),
       catchError(() => {
@@ -34,11 +30,7 @@ export class MonitoringService {
     );
   }
 
-  /**
-   * 2. MÉTRICAS (Adaptado para Actuator)
-   * Actuator no da todas las métricas en una sola llamada.
-   * Hacemos 3 llamadas en paralelo (forkJoin) y combinamos los resultados.
-   */
+
   getSystemMetrics(): Observable<SystemMetrics> {
     const uptime$ = this.http.get<any>(`${this.baseUrl}/actuator/metrics/process.uptime`);
     const memoryUsed$ = this.http.get<any>(`${this.baseUrl}/actuator/metrics/jvm.memory.used`);
@@ -48,15 +40,15 @@ export class MonitoringService {
     return forkJoin([uptime$, memoryUsed$, memoryMax$, processors$]).pipe(
       map(([uptimeRes, memUsedRes, memMaxRes, procRes]) => {
         
-        // 1. Calcular Uptime
+        //  Calcular Uptime
         const uptimeSeconds = uptimeRes.measurements[0].value;
         const uptimeHuman = this.formatUptime(uptimeSeconds);
 
-        // 2. Calcular Memoria (Bytes -> MB)
+        //  Calcular Memoria (Bytes -> MB)
         const memUsed = Math.round(memUsedRes.measurements[0].value / (1024 * 1024));
         const memTotal = Math.round(memMaxRes.measurements[0].value / (1024 * 1024));
         
-        // 3. Procesadores
+        //  Procesadores
         const cores = procRes.measurements[0].value;
 
         return {
@@ -71,12 +63,10 @@ export class MonitoringService {
     );
   }
 
-  // --- LOGS (Sentry reemplaza esto, pero mantenemos el endpoint local por si acaso) ---
-  // Si decidiste usar Sentry, puedes mostrar los logs de Sentry en su web.
-  // Si aún quieres ver logs locales en tu dashboard, mantén esto:
+  //  LOGS Sentry 
+  
   getRecentLogs(): Observable<string[]> {
-    // Este endpoint sigue siendo manual porque Actuator no expone el contenido del archivo de log por defecto (por seguridad)
-    // Así que usamos nuestro LogController que es seguro.
+    // Este endpoint sigue siendo manual porque Actuator no expone el contenido del archivo de log por defecto 
     return this.http.get<string[]>(`${this.baseUrl}/admin/logs/recent`);
   }
 

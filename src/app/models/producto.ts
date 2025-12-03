@@ -1,4 +1,4 @@
-// Interfaz simple para la promoción (coincide con PromocionSimpleDto)
+//  PromocionSimpleDto
 export interface PromocionSimple {
   idPromocion: number;
   codigo: string;
@@ -17,14 +17,12 @@ export interface ProductoResponse {
     categoriaNombre: string;
     stock: number;
     
-    // Imágenes
+    
     imageUrl: string; 
     galeriaImagenes: { id: number, url: string }[];
 
-    // --- NUEVOS CAMPOS (Corrección del error) ---
     colorDorsal?: string;
     leyendas?: { id: number, nombre: string, numero: string }[];
-    // -------------------------------------------
 
     precioOriginal?: number;
     descuentoAplicado?: number;

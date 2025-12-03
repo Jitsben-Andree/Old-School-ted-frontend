@@ -54,7 +54,6 @@ export class LoginComponent implements AfterViewInit {
       });
     };
 
-    // Eliminamos el listener 'ended' porque el HTML ya tiene "loop"
     playVideo();
   }
 
@@ -71,7 +70,7 @@ export class LoginComponent implements AfterViewInit {
     this.authService.login(request).subscribe({
       next: () => {
         this.isSubmitting = false;
-        this.router.navigate(['/']); // Home
+        this.router.navigate(['/']); 
       },
       error: (err: Error) => { 
         this.isSubmitting = false;

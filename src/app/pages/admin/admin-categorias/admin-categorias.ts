@@ -47,14 +47,13 @@ export class AdminCategoriasComponent implements OnInit {
   // Maneja el envío del formulario (Crear o Actualizar)
   manejarSubmit(): void {
     if (this.categoriaForm.invalid) {
-      return; // Detiene si el formulario no es válido
+      return; 
     }
 
-    this.error.set(null); // Limpia errores previos
+    this.error.set(null); 
     const request: CategoriaRequest = this.categoriaForm.value;
 
     if (this.modoEdicion() && this.categoriaIdActual() !== null) {
-      // --- MODO ACTUALIZAR ---
       this.categoriaService.updateCategoria(this.categoriaIdActual()!, request).subscribe({
         next: (categoriaActualizada) => {
           // Actualiza la categoría en la lista del signal
@@ -66,10 +65,8 @@ export class AdminCategoriasComponent implements OnInit {
         error: (err) => this.error.set('Error al actualizar la categoría')
       });
     } else {
-      // --- MODO CREAR ---
       this.categoriaService.createCategoria(request).subscribe({
         next: (nuevaCategoria) => {
-          // Añade la nueva categoría a la lista del signal
           this.categorias.update(cats => [...cats, nuevaCategoria]);
           this.resetearFormulario();
         },
@@ -94,7 +91,6 @@ export class AdminCategoriasComponent implements OnInit {
       this.error.set(null);
       this.categoriaService.deleteCategoria(id).subscribe({
         next: () => {
-          // Elimina la categoría de la lista del signal
           this.categorias.update(cats => cats.filter(c => c.idCategoria !== id));
         },
         error: (err) => this.error.set('Error al eliminar la categoría. Asegúrate de que no esté en uso.')

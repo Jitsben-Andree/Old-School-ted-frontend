@@ -8,7 +8,7 @@ describe('MonitoringService', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule],  // 💥 aquí se registra _HttpClient
+      imports: [HttpClientTestingModule],  
       providers: [MonitoringService]
     });
 

@@ -63,7 +63,7 @@ export const routes: Routes = [
     ]
   },
 
-  // Ruta Wildcard (Not Found) - Siempre al final
-  { path: '**', redirectTo: '' } // O a una página 404 dedicada
+  
+  { path: '**', redirectTo: '' } 
 ];
 

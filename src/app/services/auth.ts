@@ -3,7 +3,6 @@ import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
 import { catchError, tap } from 'rxjs/operators';
 
-// Importa los modelos (DTOs)
 import { AuthResponse } from '../models/auth-response';
 import { LoginRequest } from '../models/login-request';
 import { RegisterRequest } from '../models/register-request';
@@ -16,17 +15,15 @@ import { computed, inject, Injectable, signal } from '@angular/core';
 export class AuthService {
 
   private http = inject(HttpClient);
-  
-  // URL de tu API (confirmada por tu application.properties)
   private API_URL = 'http://localhost:8080/api/v1/auth';
 
-  // --- Signals para el estado de autenticación ---
+  //  Signals para el estado de autenticación 
   public jwtToken = signal<string | null>(localStorage.getItem('token'));
   public currentUser = signal<AuthResponse | null>(
     JSON.parse(localStorage.getItem('user') || 'null')
   );
 
-  // --- Signals Computados (derivados) ---
+ 
   public isLoggedIn = computed(() => !!this.jwtToken());
   public isAdmin = computed(() => 
     this.currentUser()?.roles?.includes('Administrador') ?? false
@@ -44,7 +41,7 @@ export class AuthService {
   public login(request: LoginRequest): Observable<AuthResponse> {
     return this.http.post<AuthResponse>(`${this.API_URL}/login`, request).pipe(
       tap(response => this.saveAuthData(response)),
-      catchError(this.handleError) // El handleError se encarga de lanzar el error
+      catchError(this.handleError)
     );
   }
 
@@ -76,14 +73,14 @@ export class AuthService {
     this.currentUser.set(response);
   }
 
-  // --- Manejador de Errores ---
+  //  Manejador de Errores 
   private handleError(error: HttpErrorResponse): Observable<never> {
     console.error('Ocurrió un error en AuthService:', error.message);
     
-    // El backend ahora envía un objeto, ej: { error: "Mensaje" }
-    const errorMsg = error.error?.error || // Nuestro error {error: "..."}
-                     error.error?.message || // Error estándar de Spring
-                     error.message || // Mensaje de HttpErrorResponse
+    // backend ahora envía un objeto
+    const errorMsg = error.error?.error || 
+                     error.error?.message || 
+                     error.message || 
                      'Error desconocido en el servicio de autenticación.';
     
     // Lanzamos el mensaje de error específico

@@ -23,8 +23,7 @@ export class CartComponent implements OnInit {
 
   public isLoading = signal(true);
   public error = signal<string | null>(null);
-  // Señal para manejar el estado de carga de la actualización de cantidad
-  public updatingQuantity = signal<number | null>(null); // Guarda el ID del item que se está actualizando
+  public updatingQuantity = signal<number | null>(null);
 
   ngOnInit(): void {
     if (!this.cartService.cart() && this.authService.isLoggedIn()) {
@@ -47,7 +46,7 @@ export class CartComponent implements OnInit {
            console.log('Carrito cargado, pero está vacío.');
         }
       },
-      error: (err: Error) => { // Capturar Error genérico
+      error: (err: Error) => {
         this.error.set('Error al cargar el carrito: ' + err.message);
         this.isLoading.set(false);
         console.error('Error en getMiCarrito:', err);
@@ -60,8 +59,6 @@ export class CartComponent implements OnInit {
       return;
     }
     this.error.set(null);
-    // Indicar visualmente que se está eliminando (opcional)
-    // Podrías añadir una clase CSS o cambiar el estado
     this.cartService.removeItem(detalleId).pipe(take(1)).subscribe({
       next: () => {
         console.log(`Ítem ${detalleId} eliminado.`);
@@ -93,23 +90,22 @@ export class CartComponent implements OnInit {
 
   /** Llama al servicio para actualizar la cantidad */
   private updateQuantity(item: DetalleCarrito, nuevaCantidad: number): void {
-      this.error.set(null); // Limpiar error
-      this.updatingQuantity.set(item.detalleCarritoId); // Marcar este item como "actualizando"
+      this.error.set(null); 
+      this.updatingQuantity.set(item.detalleCarritoId); 
 
       this.cartService.updateItemQuantity(item.detalleCarritoId, nuevaCantidad)
           .pipe(take(1))
           .subscribe({
               next: () => {
                   console.log(`Cantidad actualizada para item ${item.detalleCarritoId} a ${nuevaCantidad}`);
-                  this.updatingQuantity.set(null); // Quitar marca de "actualizando"
+                  this.updatingQuantity.set(null); 
               },
               error: (err: Error) => {
                   this.error.set(`Error al actualizar cantidad: ${err.message}`);
                   console.error(`Error en updateQuantity para item ${item.detalleCarritoId}:`, err);
                   alert(`Error al actualizar cantidad: ${err.message}`);
-                  this.updatingQuantity.set(null); // Quitar marca de "actualizando" incluso si hay error
-                  // Opcional: recargar el carrito si la actualización falla para revertir visualmente
-                  // this.loadCart();
+                  this.updatingQuantity.set(null);
+                  
               }
           });
   }
@@ -125,9 +121,7 @@ export class CartComponent implements OnInit {
     }
   }
 
-   /**
-   * Función TrackBy para optimizar el *ngFor/@for
-   */
+ 
    trackById(index: number, item: DetalleCarrito): number {
     return item.detalleCarritoId;
   }

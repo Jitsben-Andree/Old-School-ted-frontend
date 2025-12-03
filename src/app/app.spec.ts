@@ -8,7 +8,7 @@ import { App } from './app';
 describe('App', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [App], // tu componente standalone
+      imports: [App], 
       providers: [
         provideRouter([]),
         provideHttpClient(withInterceptorsFromDi()),
@@ -23,7 +23,7 @@ describe('App', () => {
     expect(app).toBeTruthy();
   });
 
-  // 👇 test corregido según tu app.html
+  
   it('should render the layout with navbar and footer', () => {
     const fixture = TestBed.createComponent(App);
     fixture.detectChanges();

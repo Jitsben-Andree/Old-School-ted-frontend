@@ -3,7 +3,6 @@ import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 
 import { UnlockAccountComponent } from './unlock';
-// si usas AuthService directamente en el componente, puedes importar esto:
 import { AuthService } from '../../services/auth';
 
 describe('UnlockAccountComponent', () => {
@@ -13,12 +12,11 @@ describe('UnlockAccountComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [
-        UnlockAccountComponent,   // standalone
-        HttpClientTestingModule,  // para HttpClient de AuthService
-        RouterTestingModule       // 💥 aquí viene ActivatedRoute mockeado
+        UnlockAccountComponent, 
+        HttpClientTestingModule, 
+        RouterTestingModule      
       ],
-      // SOLO si AuthService NO tiene providedIn: 'root'
-      // providers: [AuthService]
+
     }).compileComponents();
 
     fixture = TestBed.createComponent(UnlockAccountComponent);

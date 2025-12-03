@@ -3,7 +3,7 @@ import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http
 import { Observable, throwError } from 'rxjs';
 import { catchError, tap } from 'rxjs/operators';
 import { Carrito } from '../models/carrito';
-import { AddItemRequest } from '../models/add-item-request'; // Asegúrate de haber actualizado este archivo primero
+import { AddItemRequest } from '../models/add-item-request'; 
 import { AuthService } from './auth';
 
 @Injectable({
@@ -34,17 +34,16 @@ export class CartService {
     );
   }
 
-  // --- MÉTODO ACTUALIZADO ---
   addItem(
     productoId: number, 
     cantidad: number, 
-    personalizacion?: any, // Recibimos la personalización (opcional)
-    parche?: any           // Recibimos el parche (opcional)
+    personalizacion?: any, 
+    parche?: any           
   ): Observable<Carrito> {
     
     console.log(`CartService: Añadiendo item ${productoId}`, { personalizacion, parche });
     
-    // Construimos el objeto request con los nuevos campos
+    //  objeto request con los nuevos campos
     const request: AddItemRequest = { 
         productoId, 
         cantidad,
@@ -62,7 +61,6 @@ export class CartService {
       catchError(this.handleError)
     );
   }
-  // --------------------------
 
   removeItem(detalleCarritoId: number): Observable<Carrito> {
     return this.http.delete<Carrito>(`${this.API_URL}/eliminar/${detalleCarritoId}`, {

@@ -30,19 +30,18 @@ export class CheckoutComponent implements OnInit {
   public errorMessage = signal<string | null>(null);
   public successMessage = signal<string | null>(null);
 
-  // Métodos de pago (con display e ID/Value)
+  // Métodos de pago 
   public metodosPago = [
-    { value: 'YAPE', display: 'Yape', icon: '📱' }, // Iconos opcionales
+    { value: 'YAPE', display: 'Yape', icon: '📱' }, 
     { value: 'PLIN', display: 'Plin', icon: '📱' },
     { value: 'TARJETA', display: 'Tarjeta de Crédito/Débito', icon: '💳' },
     { value: 'PAYPAL', display: 'PayPal', icon: '🅿️' },
     { value: 'TRANSFERENCIA', display: 'Transferencia Bancaria', icon: '🏦' }
   ];
 
-  // Información simulada para métodos de pago ---
   public yapeInfo = {
     numero: '987 654 321',
-    qrUrl: 'https://placehold.co/150x150/FFEC44/000000?text=Scan+Yape+QR' // URL placeholder para QR
+    qrUrl: 'https://placehold.co/150x150/FFEC44/000000?text=Scan+Yape+QR' 
   };
   public plinInfo = {
     numero: '912 345 678'
@@ -52,9 +51,6 @@ export class CheckoutComponent implements OnInit {
     numeroCuenta: '191-XXXXXXXX-X-XX',
     cci: '002191XXXXXXXXXXXXXX'
   };
-  // Para PayPal, normalmente redirigirías o usarías su SDK.
-  // Para Tarjeta, necesitarías campos adicionales en el form y validación (no lo haremos completo por seguridad).
- 
 
 
   constructor() {
@@ -62,11 +58,9 @@ export class CheckoutComponent implements OnInit {
     this.checkoutForm = this.fb.group({
       direccionEnvio: ['', [Validators.required, Validators.minLength(10)]],
       metodoPagoInfo: ['TARJETA', Validators.required],
-      // --- Opcional: Campos simulados para tarjeta ---
-      numeroTarjeta: [''], // Sin validadores reales por seguridad
-      fechaExpiracion: [''], // MM/AA
+      numeroTarjeta: [''], 
+      fechaExpiracion: [''], 
       cvc: ['']
-      // --- Fin Opcional ---
     });
 
     //  Habilitar/Deshabilitar campos de tarjeta según método ---

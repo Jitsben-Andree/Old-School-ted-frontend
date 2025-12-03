@@ -20,7 +20,7 @@ describe('AdminLogsComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [AdminLogsComponent],        // standalone ✅
+      imports: [AdminLogsComponent],   
       providers: [
         { provide: MonitoringService, useValue: monitoringServiceMock }
       ]

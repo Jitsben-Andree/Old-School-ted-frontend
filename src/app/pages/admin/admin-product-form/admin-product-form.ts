@@ -148,7 +148,6 @@ export class AdminProductFormComponent implements OnInit {
         }
 
         this.currentProductImageUrl.set(product.imageUrl || null);
-        // @ts-ignore
         this.galleryImages.set(product.galeriaImagenes || []);
         
         this.loading.set(false);
@@ -161,7 +160,7 @@ export class AdminProductFormComponent implements OnInit {
     });
   }
 
-  // --- MÉTODOS DE IMÁGENES ---
+  //  MÉTODOS DE IMÁGENES 
   onMainFileSelected(event: Event): void {
      const input = event.target as HTMLInputElement;
      if (input.files?.length) this.selectedMainFile.set(input.files[0]);
@@ -187,7 +186,6 @@ export class AdminProductFormComponent implements OnInit {
       this.isUploadingGallery.set(true);
       this.productService.uploadGalleryImage(this.currentProductId()!, file).subscribe({
         next: (res) => {
-          // @ts-ignore
           this.galleryImages.set(res.galeriaImagenes || []);
           this.isUploadingGallery.set(false);
           input.value = ''; 
@@ -205,7 +203,7 @@ export class AdminProductFormComponent implements OnInit {
     });
   }
 
-  // --- GUARDAR PRODUCTO ---
+  //  GUARDAR PRODUCTO 
   onSubmit(): void {
     if (this.productForm.invalid) {
         this.productForm.markAllAsTouched();

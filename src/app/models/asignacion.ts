@@ -1,21 +1,21 @@
 export interface AsignacionResponse {
-  idAsignacion: number; // El ID de la tabla ProductoProveedor
+  idAsignacion: number;
   productoId: number;
   productoNombre: string;
   proveedorId: number;
   proveedorRazonSocial: string;
-  precioCosto: number; // En Java es BigDecimal, en TS usamos number
+  precioCosto: number; 
 }
 
-// Interfaz para crear una asignación (ProductoProveedorRequest)
+// ProductoProveedorRequest
 export interface AsignacionRequest {
   productoId: number;
   proveedorId: number;
-  precioCosto: number; // En Java es BigDecimal, en TS usamos number
+  precioCosto: number; 
 }
 
-// Interfaz para actualizar el precio (UpdatePrecioCostoRequest)
-// Renombrada a UpdatePrecioRequest para claridad en Angular
+//UpdatePrecioCostoRequest
+
 export interface UpdatePrecioRequest {
-  nuevoPrecioCosto: number; // En Java es BigDecimal, en TS usamos number
+  nuevoPrecioCosto: number; 
 }

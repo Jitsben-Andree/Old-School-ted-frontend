@@ -1,4 +1,4 @@
-// Coincide con tu DTO PedidoResponse
+//PedidoResponse
 export interface PedidoResponse {
   pedidoId: number;
   fecha: string; 

@@ -1,12 +1,12 @@
-import { Component, OnInit, inject, signal, computed } from '@angular/core'; // Importar computed
+import { Component, OnInit, inject, signal, computed } from '@angular/core'; 
 import { CommonModule, CurrencyPipe } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { AsignacionService } from '../../../services/asignacion';
 import { ProductService } from '../../../services/product';
-import { ProveedorService } from '../../../services/proveedor'; // Importar ProveedorService
+import { ProveedorService } from '../../../services/proveedor'; 
 import { AsignacionRequest, AsignacionResponse } from '../../../models/asignacion';
 import { ProductoResponse } from '../../../models/producto';
-import { Proveedor } from '../../../models/proveedor'; // Importar ProveedorResponse
+import { Proveedor } from '../../../models/proveedor'; 
 import { HttpErrorResponse } from '@angular/common/http';
 import { forkJoin, take } from 'rxjs';
 
@@ -22,12 +22,12 @@ export class AdminAsignacionesComponent implements OnInit {
   private fb = inject(FormBuilder);
   private asignacionService = inject(AsignacionService);
   private productService = inject(ProductService);
-  private proveedorService = inject(ProveedorService); // Inyectar ProveedorService
+  private proveedorService = inject(ProveedorService);
 
   // Señales de estado
   public isLoading = signal(true);
   public error = signal<string | null>(null);
-  public formError = signal<string | null>(null); // Error específico del formulario
+  public formError = signal<string | null>(null)
 
   // Señales de datos
   public productos = signal<ProductoResponse[]>([]);
@@ -42,17 +42,16 @@ export class AdminAsignacionesComponent implements OnInit {
   // Formulario Reactivo
   public asignacionForm: FormGroup;
 
-  // *** NUEVO: Computed Signal para el nombre del producto seleccionado ***
   public selectedProductName = computed(() => {
     const prodId = this.selectedProductId();
     const prods = this.productos();
     if (prodId === null || !prods || prods.length === 0) {
-      return 'Producto Desconocido'; // Valor por defecto si no hay ID o productos
+      return 'Producto Desconocido';
     }
-    // Buscar el producto y devolver su nombre, o el fallback
+
     return prods.find(p => p.id === prodId)?.nombre || 'Producto Desconocido';
   });
-  // *** FIN NUEVO ***
+ 
 
 
   constructor() {

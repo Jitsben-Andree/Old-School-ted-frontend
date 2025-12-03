@@ -13,12 +13,11 @@ class AuthServiceMock {
 }
 
 class CartServiceMock {
-  // ✅ simulamos un signal: función que devuelve array, y además tiene .set()
   cart: any;
 
   constructor() {
-    const fn: any = jasmine.createSpy('cart').and.returnValue([]); // cart()
-    fn.set = jasmine.createSpy('set');                             // cart.set(...)
+    const fn: any = jasmine.createSpy('cart').and.returnValue([]);
+    fn.set = jasmine.createSpy('set');                            
     this.cart = fn;
   }
 
@@ -62,7 +61,7 @@ describe('Navbar', () => {
     const auth = TestBed.inject(AuthService) as unknown as AuthServiceMock;
     const cart = TestBed.inject(CartService) as unknown as CartServiceMock;
 
-    spyOn(window, 'confirm').and.returnValue(true); // simulamos que el usuario confirma
+    spyOn(window, 'confirm').and.returnValue(true); 
     const navSpy = spyOn(router, 'navigate').and.resolveTo(true);
 
     component.logout();

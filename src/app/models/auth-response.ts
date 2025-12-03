@@ -1,4 +1,4 @@
-// Basado en tu DTO AuthResponse.java
+// AuthResponse.java
 export interface AuthResponse {
   token: string;
   refreshToken: string;

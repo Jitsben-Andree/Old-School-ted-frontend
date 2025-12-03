@@ -3,7 +3,7 @@ import { provideRouter } from '@angular/router';
 import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 
-import { AuthService } from './auth'; // ajusta la ruta si es distinta
+import { AuthService } from './auth'; 
 
 describe('AuthService', () => {
   let service: AuthService;
@@ -11,13 +11,9 @@ describe('AuthService', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       providers: [
-        // HttpClient real (sin salir a red) + respeta interceptores registrados en DI
         provideHttpClient(withInterceptorsFromDi()),
-        // Módulo de testing para mockear las peticiones HTTP
         provideHttpClientTesting(),
-        // Si el servicio navega al hacer logout/login
         provideRouter([]),
-        // El propio servicio a probar
         AuthService,
       ],
     }).compileComponents();

@@ -1,4 +1,4 @@
-export interface DetalleCarrito { // Cambiar nombre a DetalleCarrito
+export interface DetalleCarrito { 
       detalleCarritoId: number;
       productoId: number;
       productoNombre: string;
