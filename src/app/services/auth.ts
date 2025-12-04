@@ -8,6 +8,7 @@ import { LoginRequest } from '../models/login-request';
 import { RegisterRequest } from '../models/register-request';
 import { UnlockRequest } from '../models/UnlockRequest';
 import { computed, inject, Injectable, signal } from '@angular/core';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
@@ -15,7 +16,9 @@ import { computed, inject, Injectable, signal } from '@angular/core';
 export class AuthService {
 
   private http = inject(HttpClient);
-  private API_URL = 'http://localhost:8080/api/v1/auth';
+  
+  private API_URL = `${environment.apiUrl}/auth`
+
 
   //  Signals para el estado de autenticación 
   public jwtToken = signal<string | null>(localStorage.getItem('token'));

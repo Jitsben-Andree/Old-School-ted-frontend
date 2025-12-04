@@ -6,6 +6,7 @@ import { ProductoResponse } from '../models/producto';
 import { Categoria } from '../models/categoria';
 import { ProductoRequest } from '../models/producto-request';
 import { AuthService } from './auth';
+import { environment } from '../../environments/environment';
 
 interface ImageUploadResponse {
   message: string;
@@ -20,10 +21,10 @@ export class ProductService {
   private authService = inject(AuthService);
 
   // URLs configuradas según tu Backend
-  private API_URL_PUBLIC = 'http://localhost:8080/api/v1/productos';
-  private API_URL_ADMIN = 'http://localhost:8080/api/v1/admin/productos';
-  private API_URL_CATEGORIAS = 'http://localhost:8080/api/v1/categorias';
-  private API_URL_CATEGORIAS_ADMIN = 'http://localhost:8080/api/v1/admin/categorias';
+  private API_URL_PUBLIC =  `${environment.apiUrl}/productos`;
+  private API_URL_ADMIN = `${environment.apiUrl}/admin/productos`;
+  private API_URL_CATEGORIAS = `${environment.apiUrl}/categorias`;
+  private API_URL_CATEGORIAS_ADMIN = `${environment.apiUrl}/admin/categorias`;
 
   //  MÉTODOS PÚBLICOS 
 

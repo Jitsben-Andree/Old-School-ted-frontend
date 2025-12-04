@@ -4,6 +4,7 @@ import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { Promocion, PromocionRequest } from '../models/promocion';
 import { AuthService } from './auth';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
@@ -13,8 +14,8 @@ export class PromocionService {
   private http = inject(HttpClient);
   private authService = inject(AuthService);
   // Separar URLs públicas y de admin
-  private API_URL_PUBLIC = 'http://localhost:8080/api/v1/promociones';
-  private API_URL_ADMIN = 'http://localhost:8080/api/v1/admin/promociones'; 
+  private API_URL_PUBLIC = `${environment.apiUrl}/promociones`;
+  private API_URL_ADMIN = `${environment.apiUrl}/admin/promociones`; 
 
   //  Helper para cabeceras 
   private createAuthHeaders(): HttpHeaders {

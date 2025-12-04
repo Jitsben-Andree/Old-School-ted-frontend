@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Inventario } from '../models/inventario';
 import { InventarioUpdateRequest } from '../models/inventario-update-request';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
@@ -11,7 +12,7 @@ export class InventarioService {
   private http = inject(HttpClient);
   
   // private authService = inject(AuthService); 
-  private apiUrl = 'http://localhost:8080/api/v1/inventario';
+  private apiUrl = `${environment.apiUrl}/inventario`;
 
  
  

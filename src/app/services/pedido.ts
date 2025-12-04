@@ -7,6 +7,7 @@ import { PedidoResponse } from '../models/pedido';
 import { AdminUpdateEnvioRequest } from '../models/admin-update-envio-request'; // Ajusta si es necesario
 import { AdminUpdatePagoRequest } from '../models/admin-update-pago-request';
 import { AdminUpdatePedidoStatusRequest } from '../models/admin-update-pedido-request';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
@@ -14,8 +15,8 @@ import { AdminUpdatePedidoStatusRequest } from '../models/admin-update-pedido-re
 export class PedidoService {
 
   private http = inject(HttpClient);
-  private apiUrl = 'http://localhost:8080/api/v1/pedidos';
-  private adminApiUrl = 'http://localhost:8080/api/v1/admin/pedidos';
+  private apiUrl = `${environment.apiUrl}/pedidos`;
+  private adminApiUrl = `${environment.apiUrl}/admin/pedidos`;
 
   constructor() { }
 
@@ -31,8 +32,7 @@ export class PedidoService {
     return this.http.get<PedidoResponse>(`${this.apiUrl}/${id}`).pipe(catchError(this.handleError));
   }
 
-  // --- ADMIN ---
-
+  //  ADMIN 
   getAllPedidosAdmin(): Observable<PedidoResponse[]> {
     return this.http.get<PedidoResponse[]>(this.adminApiUrl).pipe(catchError(this.handleError));
   }

@@ -3,7 +3,8 @@ import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http
 import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { AsignacionResponse, AsignacionRequest, UpdatePrecioRequest } from '../models/asignacion';
-import { AuthService } from './auth'; // Importar AuthService
+import { AuthService } from './auth'; 
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
@@ -12,7 +13,7 @@ export class AsignacionService {
 
   private http = inject(HttpClient);
   private authService = inject(AuthService);
-  private API_URL = 'http://localhost:8080/api/v1/asignaciones'; 
+  private API_URL = `${environment.apiUrl}/asignaciones`; 
 
   // Helper para crear cabeceras 
   private createAuthHeaders(): HttpHeaders {

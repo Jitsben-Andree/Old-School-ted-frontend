@@ -4,6 +4,7 @@ import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { Categoria } from '../models/categoria';
 import { CategoriaRequest } from '../models/categoria-request';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
@@ -11,11 +12,9 @@ import { CategoriaRequest } from '../models/categoria-request';
 export class CategoriaService {
 
   private http = inject(HttpClient);
-  private apiUrl = 'http://localhost:8080/api/v1/categorias'; 
+  private apiUrl = `${environment.apiUrl}/categorias`; 
 
   //  MÉTODOS PÚBLICOS (GET) 
-
- 
   getAllCategorias(): Observable<Categoria[]> {
     return this.http.get<Categoria[]>(this.apiUrl).pipe(
       catchError(this.handleError)

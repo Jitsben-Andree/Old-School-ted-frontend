@@ -4,17 +4,17 @@ import { Routes } from '@angular/router';
 import { authGuard } from './guards/auth-guard';
 import { adminGuard } from './guards/admin-guard';
 
-// --- COMPONENTES PÚBLICOS ---
+//  COMPONENTES PÚBLICOS 
 import { HomeComponent } from './pages/home/home';
 import { LoginComponent } from './pages/login/login';
 import { RegisterComponent } from './pages/register/register';
 
-// --- COMPONENTES DE CLIENTE (Protegidos) ---
+//  COMPONENTES DE CLIENTE (Protegidos) 
 import { CartComponent } from './pages/cart/cart';
 import { CheckoutComponent } from './pages/checkout/checkout';
 import { MyOrdersComponent } from './pages/my-orders/my-orders';
 
-// --- COMPONENTES DE ADMIN (Protegidos) ---
+//  COMPONENTES DE ADMIN (Protegidos) 
 import { AdminLayoutComponent } from './pages/admin/admin-layout/admin-layout';
 import { AdminProductsComponent } from './pages/admin/admin-products/admin-products';
 import { AdminProductFormComponent } from './pages/admin/admin-product-form/admin-product-form';
@@ -37,7 +37,7 @@ export const routes: Routes = [
   { path: 'producto/:id', component: ProductDetailComponent }, 
   { path: 'unlock', component: UnlockAccountComponent },
 
-  // Rutas Protegidas (Cliente o Admin)
+  // Rutas Protegidas Cliente o Admin
   { path: 'cart', component: CartComponent, canActivate: [authGuard] },
   { path: 'checkout', component: CheckoutComponent, canActivate: [authGuard] },
   { path: 'mis-pedidos', component: MyOrdersComponent, canActivate: [authGuard] },

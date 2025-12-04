@@ -4,6 +4,7 @@ import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { Proveedor } from '../models/proveedor';
 import { ProveedorRequest } from '../models/proveedor-request';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
@@ -11,9 +12,8 @@ import { ProveedorRequest } from '../models/proveedor-request';
 export class ProveedorService {
 
   private http = inject(HttpClient);
-  // URL base de tu API (ajustada a los endpoints de Proveedor)
-  private apiUrl = 'http://localhost:8080/api/v1/proveedores';
-
+  
+  private apiUrl = `${environment.apiUrl}/proveedores`;
   // Todos estos endpoints requieren token de Admin (que el interceptor ya añade)
 
   getAllProveedores(): Observable<Proveedor[]> {

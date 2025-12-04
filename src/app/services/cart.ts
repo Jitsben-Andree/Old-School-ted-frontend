@@ -5,6 +5,7 @@ import { catchError, tap } from 'rxjs/operators';
 import { Carrito } from '../models/carrito';
 import { AddItemRequest } from '../models/add-item-request'; 
 import { AuthService } from './auth';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
@@ -12,7 +13,7 @@ import { AuthService } from './auth';
 export class CartService {
   private http = inject(HttpClient);
   private authService = inject(AuthService);
-  private API_URL = 'http://localhost:8080/api/v1/carrito';
+  private API_URL = `${environment.apiUrl}/carrito`;
 
   public cart = signal<Carrito | null>(null);
 
